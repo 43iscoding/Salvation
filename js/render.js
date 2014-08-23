@@ -64,6 +64,7 @@ function render(_objects, _particles) {
         var from = getSelected().getCenter();
         var to = input.getMouse();
         bufferContext.strokeStyle = '#AAA';
+        bufferContext.lineWidth = 1;
         bufferContext.beginPath();
         bufferContext.moveTo(from.x, from. y);
         bufferContext.lineTo(to.x, to.y);
@@ -118,7 +119,20 @@ function getRandomStarColor() {
 }
 
 function renderUI() {
+    return;
+    bufferContext.textAlign = "center";
+    bufferContext.font = '12px Aoyagi bold';
 
+    bufferContext.fillStyle = '#333333';
+    bufferContext.fillRect(19, 19, 102, 17);
+    //bufferContext.fillStyle = '#99EE99';
+    //bufferContext.fillText('Population:', WIDTH / 10 + 1, HEIGHT / 17 - 1);
+    var population = getPopulationInfo();
+    bufferContext.fillStyle = '#555588';
+    bufferContext.fillRect(20, 20, 100, 15);
+    bufferContext.fillStyle = '#441111';
+    bufferContext.fillRect(20, 20, 100 * (population.lost / population.total), 15);
+    //bufferContext.fillText(String((population.total - population.lost) + '/' + population.total), WIDTH / 4 + 1, HEIGHT / 17 - 1);
 }
 
 function renderDebug() {

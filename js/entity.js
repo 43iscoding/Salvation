@@ -61,6 +61,10 @@ function Entity(x, y, width, height, type, sprite, args) {
 }
 
 Entity.prototype = {
+    mouseOver : function() {
+        var mouse = input.getMouse();
+        return engine.containsPoint(this, mouse.x, mouse.y);
+    },
     update : function() {},
     getId : function() {
         return this.id;
@@ -198,6 +202,9 @@ Planet.prototype = Object.create(Block.prototype);
 Planet.prototype.getPopulation = function() {
     return this.population;
 };
+Planet.prototype.resetPopulation = function() {
+    this.population = 0;
+};
 Planet.prototype.decPopulation = function() {
     if (this.population == 0) return false;
     this.population--;
@@ -222,12 +229,13 @@ Planet.prototype.render = function(context) {
     var offset = Math.floor(this.counter / 10);
     if (this.corrupted()) {
         context.globalAlpha = this.getCorruptionRate();
-        context.drawImage(res.get('planetNoise'), PLANET_SIZE * offset, 0, PLANET_SIZE, PLANET_SIZE, 0, 0, PLANET_SIZE, PLANET_SIZE);
+        context.drawImage(res.get('planetOverlay'), PLANET_SIZE * offset, 0, PLANET_SIZE, PLANET_SIZE, 0, 0, PLANET_SIZE, PLANET_SIZE);
         context.globalAlpha = '1';
     }
     if (this.selected) {
-        context.fillStyle = 'rgba(1, 1, 1, 0.5)';
-        context.fillRect(0, 0, PLANET_SIZE, PLANET_SIZE);
+        context.drawImage(res.get('planetOverlay'), PLANET_SIZE, PLANET_SIZE, PLANET_SIZE, PLANET_SIZE, 0, 0, PLANET_SIZE, PLANET_SIZE);
+    } else if (this.mouseOver()) {
+        context.drawImage(res.get('planetOverlay'), 0, PLANET_SIZE, PLANET_SIZE, PLANET_SIZE, 0, 0, PLANET_SIZE, PLANET_SIZE);
     }
     //render population
     context.fillStyle = '#888888';
@@ -257,15 +265,28 @@ function Tunnel(x, y, args) {
 }
 Tunnel.prototype = Object.create(Entity.prototype);
 Tunnel.prototype.render = function(context) {
-    context.strokeStyle = '#FFF';
+    var gradient = context.createLinearGradient(this.fromCenter.x, this.fromCenter.y, this.toCenter.x, this.toCenter.y);
+    gradient.addColorStop(0, '#222');
+    gradient.addColorStop(0.2, '#222');
+    gradient.addColorStop(0.8, "#AFA");
+    gradient.addColorStop(1, "#AFA");
     context.beginPath();
-    context.moveTo(this.fromCenter.x, this.fromCenter.y );
+    context.lineWidth = 4;
+    context.strokeStyle = 'rgba(256,256,256,0.2)';
+    context.moveTo(this.fromCenter.x, this.fromCenter.y);
+    context.lineTo(this.toCenter.x, this.toCenter.y);
+    context.closePath();
+    context.stroke();
+    context.beginPath();
+    context.lineWidth = 2;
+    context.strokeStyle = gradient;
+    context.moveTo(this.fromCenter.x, this.fromCenter.y);
     context.lineTo(this.toCenter.x, this.toCenter.y);
     context.closePath();
     context.stroke();
 };
 Tunnel.prototype.update = function() {
-    this.counter = ++this.counter % 30;
+    this.counter = ++this.counter % 1;
     if (this.counter == 0 && this.from.decPopulation()) this.to.incPopulation();
 };
 

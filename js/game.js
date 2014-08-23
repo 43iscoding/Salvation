@@ -11,6 +11,14 @@ var counter = 0;
 
 var VOID = null;
 
+var populationLost = 0;
+var populationSaved = 0;
+var totalPopulation = 0;
+
+window.getPopulationInfo = function() {
+    return { total : totalPopulation, lost : populationLost, saved : populationSaved };
+};
+
 window.getVoid = function() {
     return VOID;
 };
@@ -33,6 +41,9 @@ function init() {
 function startLevel() {
     initStars();
     objects = [];
+    populationLost = 0;
+    totalPopulation = 0;
+    populationSaved = 0;
     VOID = generateVoid(0);
     objects.push(generatePlanet(50, 100));
     objects.push(generatePlanet(200, 10));
@@ -45,7 +56,9 @@ function generateVoid(pos) {
 }
 
 function generatePlanet(x, y) {
-    return spawn(TYPE.PLANET, x, y, { style : randomInt(4), population : 5 + randomInt(10)});
+    var pop = 150 + randomInt(20) * 10;
+    totalPopulation += pop;
+    return spawn(TYPE.PLANET, x, y, { style : randomInt(4), population : pop});
 }
 
 function tick() {
@@ -167,6 +180,8 @@ function updateEntity(entity) {
     entity.update();
     if (entity.type == TYPE.PLANET) {
         if (entity.destroyed()) {
+            populationLost += entity.getPopulation();
+            entity.resetPopulation();
             if (selected == entity) {
                 entity.selected = false;
                 selected = null;
