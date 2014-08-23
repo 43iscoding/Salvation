@@ -15,6 +15,9 @@ var populationLost = 0;
 var populationSaved = 0;
 var totalPopulation = 0;
 
+var planetPool = [];
+var PLANET_TYPES = 12;
+
 window.getPopulationInfo = function() {
     return { total : totalPopulation, lost : populationLost, saved : populationSaved };
 };
@@ -40,6 +43,7 @@ function init() {
 
 function startLevel() {
     initStars();
+    resetPlanetPool();
     objects = [];
     particles = [];
     populationLost = 0;
@@ -57,9 +61,23 @@ function generateVoid(pos) {
 }
 
 function generatePlanet(x, y) {
-    var pop = 150 + randomInt(20) * 10;
-    totalPopulation += pop;
-    return spawn(TYPE.PLANET, x, y, { style : randomInt(4), population : pop});
+    var style = planetPool.pop();
+    var population = 150 + randomInt(20) * 10;
+    totalPopulation += population;
+    return spawn(TYPE.PLANET, x, y, { style : style, population : population});
+}
+
+function resetPlanetPool() {
+    planetPool = [];
+    for (var i = 0; i < PLANET_TYPES; i++) {
+        planetPool.push(i);
+    }
+    shuffle(planetPool);
+}
+
+function shuffle(o){
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
 }
 
 function tick() {
