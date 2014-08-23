@@ -7,6 +7,14 @@ var levelComplete = false;
 
 var selected = null;
 
+var counter = 0;
+
+var VOID = null;
+
+window.getVoid = function() {
+    return VOID;
+};
+
 window.getObjects = function() {
     return objects;
 };
@@ -25,9 +33,14 @@ function init() {
 function startLevel() {
     initStars();
     objects = [];
+    VOID = generateVoid(0);
     objects.push(generatePlanet(0, 0));
     objects.push(generatePlanet(100, 150));
     objects.push(generatePlanet(250, 50));
+}
+
+function generateVoid(pos) {
+    return {to : pos, offset: randomInt(300)};
 }
 
 function generatePlanet(x, y) {
@@ -35,6 +48,7 @@ function generatePlanet(x, y) {
 }
 
 function tick() {
+    counter++;
     if (DEBUG) debug.calculateUPS();
     var from = currentTime();
     processInput();
@@ -132,6 +146,9 @@ function update() {
         if (updateParticle(particles[j])) {
             particles.splice(j, 1);
         }
+    }
+    if (counter % VOID_RATE == 0) {
+        VOID = generateVoid(++VOID.to);
     }
 }
 

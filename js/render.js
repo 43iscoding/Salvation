@@ -71,6 +71,8 @@ function render(_objects, _particles) {
         bufferContext.stroke();
     }
 
+    renderVoid();
+
     renderUI();
     renderDebug();
 
@@ -86,6 +88,21 @@ window.initStars = function() {
         stars.push({x : i,  y : randomInt(HEIGHT), color : getRandomStarColor()});
     }
 };
+
+function renderVoid() {
+    var VOID = getVoid();
+    console.log(HEIGHT);
+    bufferContext.drawImage(res.get('noise'), VOID.offset, 0, VOID.to, HEIGHT - 40, 0, 0, VOID.to, HEIGHT);
+    for (var i = 0; i < 4; i++) {
+        var chance = 1 - 0.3 * i;
+        var x = VOID.to + i;
+        for (var y = 0; y < HEIGHT; y++) {
+            if (Math.random() < chance) {
+                bufferContext.drawImage(res.get('pallete'), randomInt(16), 0, 1, 1, x, y, 1, 1);
+            }
+        }
+    }
+}
 
 function renderBackground() {
     bufferContext.clearRect(0, 0, WIDTH, HEIGHT);

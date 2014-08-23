@@ -11,6 +11,8 @@
 
     window.DEBUG = false;
 
+    window.VOID_RATE = 4;
+
     window.cookie = {
         MUTED : "muted",
         HIGHSCORE : "highscore"
