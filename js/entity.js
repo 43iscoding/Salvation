@@ -198,6 +198,14 @@ Planet.prototype = Object.create(Block.prototype);
 Planet.prototype.getPopulation = function() {
     return this.population;
 };
+Planet.prototype.decPopulation = function() {
+    if (this.population == 0) return false;
+    this.population--;
+    return true;
+};
+Planet.prototype.incPopulation = function() {
+    this.population++;
+};
 Planet.prototype.corrupted = function() {
     return this.x < getVoid().to;
 };
@@ -224,7 +232,7 @@ Planet.prototype.render = function(context) {
     //render population
     context.fillStyle = '#888888';
     context.font = '15px Aoyagi Bold';
-    context.fillText(this.population, PLANET_SIZE / 2, PLANET_SIZE / 2);
+    context.fillText(this.population, PLANET_SIZE / 2, PLANET_SIZE / 2 + 3);
 
     context.restore();
 };
@@ -244,6 +252,7 @@ function Tunnel(x, y, args) {
     this.to = args.to;
     this.fromCenter = this.from.getCenter();
     this.toCenter = this.to.getCenter();
+    this.counter = 1;
     Entity.call(this, x, y, 0, 0, TYPE.TUNNEL);
 }
 Tunnel.prototype = Object.create(Entity.prototype);
@@ -254,6 +263,10 @@ Tunnel.prototype.render = function(context) {
     context.lineTo(this.toCenter.x, this.toCenter.y);
     context.closePath();
     context.stroke();
+};
+Tunnel.prototype.update = function() {
+    this.counter = ++this.counter % 30;
+    if (this.counter == 0 && this.from.decPopulation()) this.to.incPopulation();
 };
 
 /****************************************************

@@ -109,16 +109,6 @@ function addOrRemoveTunnel(from, to) {
     objects.push(spawn(TYPE.TUNNEL, 0, 0, {from: from, to : to}));
 }
 
-function removeTunnel(planet) {
-    for (var i = objects.length - 1; i >= 0; i--) {
-        if (objects[i].type != TYPE.TUNNEL) continue;
-        var tunnel = objects[i];
-        if (tunnel.from == planet || tunnel.to == planet) {
-            objects.splice(i, 1);
-        }
-    }
-}
-
 function processInput() {
     if (levelComplete) return;
     //movement
@@ -159,7 +149,7 @@ function processInput() {
 
 function update() {
     for (var i = objects.length - 1; i >= 0; i--) {
-        updateEntity(objects[i]);
+        if (updateEntity(objects[i])) objects.splice(i, 1);
     }
 
     //process particles
@@ -175,15 +165,23 @@ function update() {
 
 function updateEntity(entity) {
     entity.update();
-    if (entity.type != TYPE.PLANET) return;
+    if (entity.type == TYPE.PLANET) {
+        if (entity.destroyed()) {
+            if (selected == entity) {
+                entity.selected = false;
+                selected = null;
+            }
+        } else if (entity.getPopulation() == 0) {
+            if (selected == entity) {
+                entity.selected = false;
+                selected = null;
+            }
 
-    if (entity.destroyed()) {
-        if (selected == entity) {
-            entity.selected = false;
-            selected = null;
         }
-        removeTunnel(entity);
+    } else if (entity.type == TYPE.TUNNEL) {
+        return (entity.to.destroyed() || entity.from.destroyed() || entity.from.getPopulation() == 0);
     }
+    return false;
 }
 
 function updateParticle(particle) {
