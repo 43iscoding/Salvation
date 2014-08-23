@@ -34,6 +34,7 @@ function startLevel() {
     initStars();
     objects = [];
     VOID = generateVoid(0);
+    objects.push(generatePlanet(50, 100));
     objects.push(generatePlanet(200, 10));
     objects.push(generatePlanet(340, 170));
     objects.push(generatePlanet(500, 70));
@@ -155,7 +156,7 @@ function update() {
 }
 
 function updateEntity(entity) {
-
+    entity.update();
 }
 
 function updateParticle(particle) {

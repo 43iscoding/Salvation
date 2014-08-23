@@ -61,6 +61,7 @@ function Entity(x, y, width, height, type, sprite, args) {
 }
 
 Entity.prototype = {
+    update : function() {},
     getId : function() {
         return this.id;
     },
@@ -188,6 +189,7 @@ Block.prototype.isPlatform = function() {
 function Planet(x, y, args) {
     var frames = [];
     this.population = args['population'];
+    this.counter = 0;
     frames[STATE.IDLE] = 0;
     var sprite = { name : 'planet', 'pos' : [args['style'] * PLANET_SIZE, 0], frames : frames, speed : 0};
     Block.call(this, x, y, TYPE.PLANET, sprite);
@@ -196,11 +198,19 @@ Planet.prototype = Object.create(Block.prototype);
 Planet.prototype.getPopulation = function() {
     return this.population;
 };
+Planet.prototype.corrupted = function() {
+    return this.x < getVoid().to;
+};
 Planet.prototype.render = function(context) {
     context.save();
     context.translate(this.x, this.y);
     this.sprite.render(context);
-    if (this.selected) {
+    if (this.corrupted()) {
+        context.globalAlpha = '0.4';
+        var offset = Math.floor(this.counter / 10);
+        context.drawImage(res.get('planetNoise'), PLANET_SIZE * offset, 0, PLANET_SIZE, PLANET_SIZE, 0, 0, PLANET_SIZE, PLANET_SIZE);
+        context.globalAlpha = '1';
+    } else if (this.selected) {
         context.fillStyle = 'rgba(1, 1, 1, 0.5)';
         context.fillRect(0, 0, PLANET_SIZE, PLANET_SIZE);
     }
@@ -213,6 +223,9 @@ Planet.prototype.render = function(context) {
 };
 Planet.prototype.toString = function() {
     return 'Planet-' + this.id +'(' + this.population + ')';
+};
+Planet.prototype.update = function() {
+    this.counter = ++this.counter % 40;
 };
 
 /****************************************************

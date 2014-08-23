@@ -9,7 +9,7 @@
         initScreen(document.getElementById('buffer'), WIDTH, HEIGHT);
         input.init();
         res.onReady(loaded);
-        res.load(['planet', 'noise', 'pallete']);
+        res.load(['planet', 'noise', 'planetNoise', 'pallete']);
     }
 
     function initScreen(canvas, width, height) {
