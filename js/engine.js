@@ -221,8 +221,8 @@ function intersect(x1, y1, w1, h1, x2, y2, w2, h2) {
              (y1 + h1 - 1 < y2));
 }
 
-function inside(x1, y1, w1, h1, x2, y2) {
-    return !((x2 < x1) || (x2 > x1 + w1) || (y2 < y1) || (y2 > y1 + h1));
+function inside(x1, y1, x2, y2, x3, y3) {
+    return !((x3 < x1) || (x3 > x2) || (y3 < y1) || (y3 > y2));
 }
 
 function collision(entity1, entity2, dir) {

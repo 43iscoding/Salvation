@@ -53,6 +53,17 @@ function render(_objects, _particles) {
         particle.render(bufferContext);
     });
 
+    if (getSelected() != null) {
+        var from = getSelected().getCenter();
+        var to = input.getMouse();
+        bufferContext.strokeStyle = '#AAA';
+        bufferContext.beginPath();
+        bufferContext.moveTo(from.x, from. y);
+        bufferContext.lineTo(to.x, to.y);
+        bufferContext.closePath();
+        bufferContext.stroke();
+    }
+
     renderUI();
     renderDebug();
 

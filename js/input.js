@@ -7,6 +7,8 @@
     var onPressedCallback = null;
     var onClickedCallback = null;
 
+    var mouse = {x : 0, y : 0};
+
     function preventDefault(e) {
         if (e.which == input.keys.BACKSPACE.code ||
             e.which == input.keys.TAB.code ||
@@ -15,36 +17,21 @@
         }
     }
 
-    window.initInput = function() {
-        document.addEventListener("keydown", function (e) {
-            setKey(e.which, true);
-
-            preventDefault(e);
-        });
-
-        document.addEventListener("keyup", function (e) {
-            setKey(e.which, false);
-        });
-
-        var canvas = document.getElementById('canvas');
-
-        canvas.addEventListener('click', function (e) {
-            var clickX;
-            var clickY;
-            if (e.pageX || e.pageY) {
-                clickX = e.pageX;
-                clickY = e.pageY;
-            }
-            else {
-                clickX = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-                clickY = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-            }
-            clickX -= canvas.offsetLeft;
-            clickY -= canvas.offsetTop;
-
-            if (onClickedCallback != null) onClickedCallback(clickX, clickY);
-        });
-    };
+    function getMousePos(e, canvas) {
+        var clickX;
+        var clickY;
+        if (e.pageX || e.pageY) {
+            clickX = e.pageX;
+            clickY = e.pageY;
+        }
+        else {
+            clickX = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+            clickY = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+        }
+        clickX -= canvas.offsetLeft;
+        clickY -= canvas.offsetTop;
+        return {x : clickX / SCALE, y : clickY / SCALE};
+    }
 
     function setKey(keyCode, state) {
         var key = fromKeycode(keyCode);
@@ -95,6 +82,31 @@
     }
 
     window.input = {
+        init: function() {
+            document.addEventListener("keydown", function (e) {
+                setKey(e.which, true);
+
+                preventDefault(e);
+            });
+
+            document.addEventListener("keyup", function (e) {
+                setKey(e.which, false);
+            });
+
+            var canvas = document.getElementById('canvas');
+
+            canvas.addEventListener('click', function (e) {
+                var pos = getMousePos(e, canvas);
+                if (onClickedCallback != null) onClickedCallback(pos.x, pos.y);
+            });
+
+            document.addEventListener('mousemove', function(e){
+                mouse = getMousePos(e, canvas);
+            }, false);
+        },
+        getMouse : function() {
+            return mouse;
+        },
         isPressed: isPressed,
         clearInput: clearInput,
         lastPressed: function() {

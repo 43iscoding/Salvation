@@ -24,27 +24,32 @@ window.STATE = {
 
 window.TYPE = {
     DUMMY : ['dummy', 0],
-    PLANET : ['planet', 1]
+    PLANET : ['planet', 1],
+    TUNNEL : ['tunnel', 0]
 };
+
+var ID = 0;
 
 /*****************************************
         Entity - Every object in game
  ****************************************/
 
 function Entity(x, y, width, height, type, sprite, args) {
+    this.id = ID++;
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this._type = type;
     this.dead = false;
+    this.selected = false;
     if (sprite != null && sprite != undefined) {
         this.sprite = new Sprite(res.get(sprite['name']), sprite['pos'], [width, height],
         //frames is array of image per state
         sprite['frames'] == undefined ? [] : sprite['frames'],
         sprite['speed'] == undefined ? 0 : sprite['speed'],
         sprite['once'] == undefined ? false : sprite['once']);
-    } else if (type != TYPE.DUMMY) {
+    } else if (type != TYPE.DUMMY && type != TYPE.TUNNEL) {
         console.log('Warning - no sprite info for ' + type);
     }
     //physics
@@ -56,11 +61,17 @@ function Entity(x, y, width, height, type, sprite, args) {
 }
 
 Entity.prototype = {
+    getId : function() {
+        return this.id;
+    },
     canLeaveScreen : function() {
         return false;
     },
     move : function(dx, dy) {
         return engine.move(this, dx, dy);
+    },
+    getCenter : function() {
+        return { x : this.x + this.width / 2, y : this.y + this.height / 2};
     },
     get type() {
         return this._type;
@@ -137,6 +148,9 @@ Entity.prototype = {
     },
     destroyOnCollision : function(entity) {
         return false;
+    },
+    setSelected : function(selected) {
+        this.selected = selected;
     }
 };
 
@@ -186,6 +200,10 @@ Planet.prototype.render = function(context) {
     context.save();
     context.translate(this.x, this.y);
     this.sprite.render(context);
+    if (this.selected) {
+        context.fillStyle = 'rgba(1, 1, 1, 0.5)';
+        context.fillRect(0, 0, PLANET_SIZE, PLANET_SIZE);
+    }
     //render population
     context.fillStyle = '#888888';
     context.font = '15px Aoyagi Bold';
@@ -194,7 +212,28 @@ Planet.prototype.render = function(context) {
     context.restore();
 };
 Planet.prototype.toString = function() {
-    return 'Planet(' + this.population + ')';
+    return 'Planet-' + this.id +'(' + this.population + ')';
+};
+
+/****************************************************
+                         Tunnel
+ ****************************************************/
+
+function Tunnel(x, y, args) {
+    this.from = args.from;
+    this.to = args.to;
+    this.fromCenter = this.from.getCenter();
+    this.toCenter = this.to.getCenter();
+    Entity.call(this, x, y, 0, 0, TYPE.TUNNEL);
+}
+Tunnel.prototype = Object.create(Entity.prototype);
+Tunnel.prototype.render = function(context) {
+    context.strokeStyle = '#FFF';
+    context.beginPath();
+    context.moveTo(this.fromCenter.x, this.fromCenter.y );
+    context.lineTo(this.toCenter.x, this.toCenter.y);
+    context.closePath();
+    context.stroke();
 };
 
 /****************************************************
@@ -222,6 +261,7 @@ Particle.prototype.act = function() {
 window.spawn = function(type, x, y, args) {
     switch (type) {
         case TYPE.PLANET : return new Planet(x, y, args);
+        case TYPE.TUNNEL : return new Tunnel(x, y, args);
         default: {
             console.log("Cannot spawn: unknown type - " + type);
         }

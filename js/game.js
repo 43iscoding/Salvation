@@ -5,8 +5,13 @@ var particles = [];
 
 var levelComplete = false;
 
+var selected = null;
+
 window.getObjects = function() {
     return objects;
+};
+window.getSelected = function() {
+    return selected;
 };
 
 window.init = init;
@@ -44,11 +49,24 @@ function win() {
 }
 
 function onClicked(x, y) {
+    objects.forEach(function(object) {
+        object.setSelected(false);
+    });
+
     for (var i = 0; i < objects.length; i++) {
-        if (engine.containsPoint(objects[i], x / SCALE, y / SCALE)) {
-            console.log("Clicked on " + objects[i].toString());
+        if (engine.containsPoint(objects[i], x, y)) {
+            if (selected == null) {
+                selected = objects[i];
+                objects[i].setSelected(true);
+            } else {
+                //make tunnel
+                objects.push(spawn(TYPE.TUNNEL, 0, 0, {from: selected, to : objects[i]}));
+                selected = null;
+            }
+            return;
         }
     }
+    selected = null;
 }
 
 function processInput() {

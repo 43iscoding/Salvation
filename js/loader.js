@@ -7,7 +7,7 @@
             document.getElementById('canvas'));
         initScreen(document.getElementById('canvas'), WIDTH * SCALE, HEIGHT * SCALE);
         initScreen(document.getElementById('buffer'), WIDTH, HEIGHT);
-        initInput();
+        input.init();
         res.onReady(loaded);
         res.load(['planet']);
     }
