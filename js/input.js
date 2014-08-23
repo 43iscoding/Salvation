@@ -5,6 +5,7 @@
     var pressed = {};
     var lastPressed = null;
     var onPressedCallback = null;
+    var onClickedCallback = null;
 
     function preventDefault(e) {
         if (e.which == input.keys.BACKSPACE.code ||
@@ -14,14 +15,36 @@
         }
     }
 
-    document.addEventListener("keydown", function (e) {
-        setKey(e.which, true);
+    window.initInput = function() {
+        document.addEventListener("keydown", function (e) {
+            setKey(e.which, true);
 
-        preventDefault(e);
-    });
-    document.addEventListener("keyup", function (e) {
-        setKey(e.which, false);
-    });
+            preventDefault(e);
+        });
+
+        document.addEventListener("keyup", function (e) {
+            setKey(e.which, false);
+        });
+
+        var canvas = document.getElementById('canvas');
+
+        canvas.addEventListener('click', function (e) {
+            var clickX;
+            var clickY;
+            if (e.pageX || e.pageY) {
+                clickX = e.pageX;
+                clickY = e.pageY;
+            }
+            else {
+                clickX = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+                clickY = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+            }
+            clickX -= canvas.offsetLeft;
+            clickY -= canvas.offsetTop;
+
+            if (onClickedCallback != null) onClickedCallback(clickX, clickY);
+        });
+    };
 
     function setKey(keyCode, state) {
         var key = fromKeycode(keyCode);
@@ -79,6 +102,9 @@
         },
         onPressed: function(callback) {
             onPressedCallback = callback;
+        },
+        onClicked: function(callback) {
+            onClickedCallback = callback;
         },
         isAlpha: function(key) {
             var keycode = toKeycode(key);

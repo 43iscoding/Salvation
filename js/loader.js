@@ -5,8 +5,9 @@
     function loadGame() {
         initRenderer(document.getElementById('buffer'),
             document.getElementById('canvas'));
-        initScreen(document.getElementById('canvas'), WIDTH * 2, HEIGHT * 2);
+        initScreen(document.getElementById('canvas'), WIDTH * SCALE, HEIGHT * SCALE);
         initScreen(document.getElementById('buffer'), WIDTH, HEIGHT);
+        initInput();
         res.onReady(loaded);
         res.load(['planet']);
     }
@@ -43,7 +44,7 @@
         toggleFullscreen : function() {
             var canvas = document.getElementById('canvas');
             if (fullScreen) {
-                initScreen(canvas, WIDTH * 2, HEIGHT * 2);
+                initScreen(canvas, WIDTH * SCALE, HEIGHT * SCALE);
             } else {
                 initScreen(canvas, window.innerWidth, window.innerHeight);
             }

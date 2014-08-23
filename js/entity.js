@@ -171,13 +171,31 @@ Block.prototype.isPlatform = function() {
                          Planet
  ****************************************************/
 
-function Planet(x, y, style) {
+function Planet(x, y, args) {
     var frames = [];
+    this.population = args['population'];
     frames[STATE.IDLE] = 0;
-    var sprite = { name : 'planet', 'pos' : [style * PLANET_SIZE, 0], frames : frames, speed : 0};
+    var sprite = { name : 'planet', 'pos' : [args['style'] * PLANET_SIZE, 0], frames : frames, speed : 0};
     Block.call(this, x, y, TYPE.PLANET, sprite);
 }
 Planet.prototype = Object.create(Block.prototype);
+Planet.prototype.getPopulation = function() {
+    return this.population;
+};
+Planet.prototype.render = function(context) {
+    context.save();
+    context.translate(this.x, this.y);
+    this.sprite.render(context);
+    //render population
+    context.fillStyle = '#888888';
+    context.font = '15px Aoyagi Bold';
+    context.fillText(this.population, PLANET_SIZE / 2, PLANET_SIZE / 2);
+
+    context.restore();
+};
+Planet.prototype.toString = function() {
+    return 'Planet(' + this.population + ')';
+};
 
 /****************************************************
                         Particle
@@ -201,9 +219,9 @@ Particle.prototype.act = function() {
     return false;
 };
 
-window.spawn = function(type, x, y, style) {
+window.spawn = function(type, x, y, args) {
     switch (type) {
-        case TYPE.PLANET : return new Planet(x, y, style);
+        case TYPE.PLANET : return new Planet(x, y, args);
         default: {
             console.log("Cannot spawn: unknown type - " + type);
         }

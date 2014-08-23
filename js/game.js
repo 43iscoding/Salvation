@@ -12,6 +12,7 @@ window.getObjects = function() {
 window.init = init;
 
 function init() {
+    input.onClicked(onClicked);
     startLevel();
     tick();
 }
@@ -19,8 +20,13 @@ function init() {
 function startLevel() {
     initStars();
     objects = [];
-    objects.push(spawn(TYPE.PLANET, 0, 0, randomInt(4)));
-    objects.push(spawn(TYPE.PLANET, 100, 150, randomInt(4)));
+    objects.push(generatePlanet(0, 0));
+    objects.push(generatePlanet(100, 150));
+    objects.push(generatePlanet(250, 50));
+}
+
+function generatePlanet(x, y) {
+    return spawn(TYPE.PLANET, x, y, { style : randomInt(4), population : randomInt(10)});
 }
 
 function tick() {
@@ -35,6 +41,14 @@ function tick() {
 
 function win() {
     //TODO: move to next level
+}
+
+function onClicked(x, y) {
+    for (var i = 0; i < objects.length; i++) {
+        if (engine.containsPoint(objects[i], x / SCALE, y / SCALE)) {
+            console.log("Clicked on " + objects[i].toString());
+        }
+    }
 }
 
 function processInput() {

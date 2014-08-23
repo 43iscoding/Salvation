@@ -49,6 +49,9 @@ window.engine = {
             }
         }
         return collisions;
+    },
+    containsPoint : function(entity, x, y) {
+        return inside(entity.x, entity.y, entity.x + entity.width, entity.y + entity.height, x, y);
     }
 };
 
@@ -216,6 +219,10 @@ function intersect(x1, y1, w1, h1, x2, y2, w2, h2) {
              (x1 + w1 - 1 < x2) ||
              (y1 > y2 + h2 - 1) ||
              (y1 + h1 - 1 < y2));
+}
+
+function inside(x1, y1, w1, h1, x2, y2) {
+    return !((x2 < x1) || (x2 > x1 + w1) || (y2 < y1) || (y2 > y1 + h1));
 }
 
 function collision(entity1, entity2, dir) {
