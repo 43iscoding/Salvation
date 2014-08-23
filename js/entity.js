@@ -25,7 +25,8 @@ window.STATE = {
 window.TYPE = {
     DUMMY : ['dummy', 0],
     PLANET : ['planet', 1],
-    TUNNEL : ['tunnel', 2]
+    TUNNEL : ['tunnel', 2],
+    PORTAL : ['planet', 1]
 };
 
 var ID = 0;
@@ -195,7 +196,10 @@ function Planet(x, y, args) {
     this.population = args['population'];
     this.counter = 0;
     frames[STATE.IDLE] = 0;
-    var sprite = { name : 'planet', 'pos' : [args['style'] * PLANET_SIZE, 0], frames : frames, speed : 0};
+    var sprite = { name : 'planet', 'pos' : [args['style'] * PLANET_SIZE, 0], frames : frames, speed : 0 };
+    if (args['sprite']) {
+        sprite = args['sprite'];
+    }
     Block.call(this, x, y, TYPE.PLANET, sprite);
 }
 Planet.prototype = Object.create(Block.prototype);
@@ -249,6 +253,28 @@ Planet.prototype.toString = function() {
 };
 Planet.prototype.update = function() {
     this.counter = ++this.counter % 40;
+};
+
+/****************************************************
+                         Portal
+****************************************************/
+
+function Portal(x, y) {
+    var frames = [];
+    frames[STATE.IDLE] = 0;
+    var sprite = { name : 'planet', 'pos' : [0, PLANET_SIZE], frames : frames, speed : 0 };
+    Planet.call(this, x, y, { sprite : sprite, population : 0});
+}
+Portal.prototype = Object.create(Planet.prototype);
+
+Portal.prototype.toString = function() {
+    return 'Portal-' + this.id +'(' + this.population + ')';
+};
+Portal.prototype.destroyed = function() {
+    return false;
+};
+Portal.prototype.corrupted = function() {
+    return false;
 };
 
 /****************************************************
@@ -316,6 +342,7 @@ window.spawn = function(type, x, y, args) {
     switch (type) {
         case TYPE.PLANET : return new Planet(x, y, args);
         case TYPE.TUNNEL : return new Tunnel(x, y, args);
+        case TYPE.PORTAL : return new Portal(x, y);
         default: {
             console.log("Cannot spawn: unknown type - " + type);
         }

@@ -8,16 +8,32 @@ var objects;
 var particles;
 
 window.render = render;
+
+var offset = 500;
 window.drawLoaded = function() {
+    offset--;
+    //MAIN LOGO
+    var test = document.getElementById('test');
+    test.getContext('2d').drawImage(res.get('noise'), offset, 0, 500, 500, 0, 0, 500, 500);
+    var pattern = bufferContext.createPattern(test, 'repeat');
     bufferContext.clearRect(0, 0, WIDTH, HEIGHT);
-    bufferContext.font = "53px Aoyagi bold";
+    bufferContext.font = "52px Aoyagi bold";
     bufferContext.textAlign = "center";
-    bufferContext.fillStyle = "#00005A";
+    bufferContext.fillStyle = pattern;
+    bufferContext.fillText("SALVATION", WIDTH / 2, HEIGHT / 2);
+    bufferContext.font = "51px Aoyagi bold";
+    bufferContext.textAlign = "center";
+    bufferContext.fillStyle = "#555555";
     bufferContext.fillText("SALVATION", WIDTH / 2, HEIGHT / 2);
     bufferContext.font = "50px Aoyagi bold";
     bufferContext.textAlign = "center";
-    bufferContext.fillStyle = "#DDB500";
+    bufferContext.fillStyle = "#111111";
     bufferContext.fillText("SALVATION", WIDTH / 2, HEIGHT / 2);
+    //PRESS TO PLAY
+    var value = 1118481 * (offset % 7);
+    bufferContext.font = "23px Aoyagi Bold";
+    bufferContext.fillStyle = '#' + value.toString(16);
+    bufferContext.fillText('PRESS ANY KEY', WIDTH / 2, HEIGHT / 4 * 3 + 20);
     execute();
 };
 window.drawLoading = function(value) {
@@ -120,6 +136,7 @@ function getRandomStarColor() {
 
 function renderUI() {
     return;
+
     bufferContext.textAlign = "center";
     bufferContext.font = '12px Aoyagi bold';
 

@@ -26,11 +26,22 @@
     }
 
     function loaded() {
+        input.onPressed(proceed);
+        input.onClicked(proceed);
+        loadedLoop();
+    }
+
+    var loop = true;
+
+    function loadedLoop() {
         drawLoaded();
-        setTimeout(proceed, 1000);
+        if (loop) setTimeout(loadedLoop, 100);
     }
 
     function proceed() {
+        loop = false;
+        input.onPressed(null);
+        input.onClicked(null);
         init();
     }
 
@@ -40,15 +51,6 @@
 
     window.loadGame = loadGame;
     window.loader = {
-        update : updateLoading,
-        toggleFullscreen : function() {
-            var canvas = document.getElementById('canvas');
-            if (fullScreen) {
-                initScreen(canvas, WIDTH * SCALE, HEIGHT * SCALE);
-            } else {
-                initScreen(canvas, window.innerWidth, window.innerHeight);
-            }
-            fullScreen = !fullScreen;
-        }
+        update : updateLoading
     }
 }());
