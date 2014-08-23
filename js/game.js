@@ -100,7 +100,9 @@ function onClicked(x, y) {
                 selected = null;
             } else {
                 //make tunnel
-                addOrRemoveTunnel(selected, planet);
+                if (engine.distance(selected.getCenter(), planet.getCenter()) < TUNNEL_RADIUS) {
+                    addOrRemoveTunnel(selected, planet);
+                }
                 selected = null;
             }
             return;

@@ -82,6 +82,13 @@ function render(_objects, _particles) {
         bufferContext.lineTo(to.x, to.y);
         bufferContext.closePath();
         bufferContext.stroke();
+        bufferContext.beginPath();
+        bufferContext.arc(from.x, from.y, TUNNEL_RADIUS, 0, 2 * Math.PI, false);
+        bufferContext.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        bufferContext.fill();
+        bufferContext.strokeStyle = 'rgba(200, 200, 200, 0.9)';
+        bufferContext.closePath();
+        bufferContext.stroke();
     }
 
     renderVoid();

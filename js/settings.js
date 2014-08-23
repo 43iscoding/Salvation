@@ -13,6 +13,8 @@
 
     window.VOID_RATE = 4;
 
+    window.TUNNEL_RADIUS = 250;
+
     window.cookie = {
         MUTED : "muted",
         HIGHSCORE : "highscore"

@@ -52,6 +52,11 @@ window.engine = {
     },
     containsPoint : function(entity, x, y) {
         return inside(entity.x, entity.y, entity.x + entity.width, entity.y + entity.height, x, y);
+    },
+    distance : function(from, to) {
+        var dx = from.x - to.x;
+        var dy = from.y - to.y;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 };
 
