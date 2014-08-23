@@ -54,19 +54,34 @@ function onClicked(x, y) {
     });
 
     for (var i = 0; i < objects.length; i++) {
+        if (objects[i].type != TYPE.PLANET) continue;
         if (engine.containsPoint(objects[i], x, y)) {
             if (selected == null) {
                 selected = objects[i];
                 objects[i].setSelected(true);
             } else {
                 //make tunnel
-                objects.push(spawn(TYPE.TUNNEL, 0, 0, {from: selected, to : objects[i]}));
+                addOrRemoveTunnel(selected, objects[i]);
                 selected = null;
             }
             return;
         }
     }
     selected = null;
+}
+
+function addOrRemoveTunnel(from, to) {
+    for (var i = objects.length - 1; i >= 0; i--) {
+        if (objects[i].type != TYPE.TUNNEL) continue;
+        var tunnel = objects[i];
+        if (tunnel.from == from) {
+            objects.splice(i, 1);
+            if (tunnel.to == to) return;
+        } else if (tunnel.from == to && tunnel.to == from) {
+            objects.splice(i, 1);
+        }
+    }
+    objects.push(spawn(TYPE.TUNNEL, 0, 0, {from: from, to : to}));
 }
 
 function processInput() {
@@ -90,8 +105,8 @@ function processInput() {
     }
 
     if (input.isPressed(input.keys.F.key)) {
-        input.clearInput(input.keys.F.key);
-        loader.toggleFullscreen();
+        //input.clearInput(input.keys.F.key);
+        //loader.toggleFullscreen();
     }
 
     if (input.isPressed(input.keys.LEFT_BRACKET.key)) {

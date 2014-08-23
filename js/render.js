@@ -103,7 +103,7 @@ function renderDebug() {
 
     //objects and particles
     bufferContext.textAlign = "center";
-    //bufferContext.font = '12px Aoyagi bold';
+    bufferContext.font = '12px Aoyagi bold';
 
     bufferContext.fillStyle = "#00005A";
     bufferContext.fillText('Objects:', WIDTH / 10 + 1, HEIGHT / 17 - 1);
