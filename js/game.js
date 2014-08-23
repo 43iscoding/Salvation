@@ -70,15 +70,23 @@ function onClicked(x, y) {
 
     for (var i = 0; i < objects.length; i++) {
         if (objects[i].type != TYPE.PLANET) continue;
-        if (engine.containsPoint(objects[i], x, y)) {
+        var planet = objects[i];
+        if (planet.destroyed()) {
+            if (planet == selected) {
+                selected = null;
+                return;
+            }
+            continue;
+        }
+        if (engine.containsPoint(planet, x, y)) {
             if (selected == null) {
-                selected = objects[i];
-                objects[i].setSelected(true);
-            } else if (selected == objects[i]) {
+                selected = planet;
+                planet.setSelected(true);
+            } else if (selected == planet) {
                 selected = null;
             } else {
                 //make tunnel
-                addOrRemoveTunnel(selected, objects[i]);
+                addOrRemoveTunnel(selected, planet);
                 selected = null;
             }
             return;
@@ -99,6 +107,16 @@ function addOrRemoveTunnel(from, to) {
         }
     }
     objects.push(spawn(TYPE.TUNNEL, 0, 0, {from: from, to : to}));
+}
+
+function removeTunnel(planet) {
+    for (var i = objects.length - 1; i >= 0; i--) {
+        if (objects[i].type != TYPE.TUNNEL) continue;
+        var tunnel = objects[i];
+        if (tunnel.from == planet || tunnel.to == planet) {
+            objects.splice(i, 1);
+        }
+    }
 }
 
 function processInput() {
@@ -157,10 +175,18 @@ function update() {
 
 function updateEntity(entity) {
     entity.update();
+    if (entity.type != TYPE.PLANET) return;
+
+    if (entity.destroyed()) {
+        if (selected == entity) {
+            entity.selected = false;
+            selected = null;
+        }
+        removeTunnel(entity);
+    }
 }
 
 function updateParticle(particle) {
-
     if (particle.updateSprite()) {
         return true;
     }

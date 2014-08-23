@@ -201,16 +201,23 @@ Planet.prototype.getPopulation = function() {
 Planet.prototype.corrupted = function() {
     return this.x < getVoid().to;
 };
+Planet.prototype.destroyed = function() {
+    return this.getCorruptionRate() > 0.6;
+};
+Planet.prototype.getCorruptionRate = function() {
+    return Math.max(0, Math.min(1, (getVoid().to - this.x) / this.width));
+};
 Planet.prototype.render = function(context) {
     context.save();
     context.translate(this.x, this.y);
     this.sprite.render(context);
+    var offset = Math.floor(this.counter / 10);
     if (this.corrupted()) {
-        context.globalAlpha = '0.4';
-        var offset = Math.floor(this.counter / 10);
+        context.globalAlpha = this.getCorruptionRate();
         context.drawImage(res.get('planetNoise'), PLANET_SIZE * offset, 0, PLANET_SIZE, PLANET_SIZE, 0, 0, PLANET_SIZE, PLANET_SIZE);
         context.globalAlpha = '1';
-    } else if (this.selected) {
+    }
+    if (this.selected) {
         context.fillStyle = 'rgba(1, 1, 1, 0.5)';
         context.fillRect(0, 0, PLANET_SIZE, PLANET_SIZE);
     }
