@@ -1,7 +1,7 @@
 (function() {
     //ui settings
     window.fps = 60;
-    window.WIDTH = 320;
+    window.WIDTH = 640;
     window.HEIGHT = 240;
 
     //TODO : Fullscreen support / dynamic scale

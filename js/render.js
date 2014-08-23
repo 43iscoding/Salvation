@@ -91,8 +91,7 @@ window.initStars = function() {
 
 function renderVoid() {
     var VOID = getVoid();
-    console.log(HEIGHT);
-    bufferContext.drawImage(res.get('noise'), VOID.offset, 0, VOID.to, HEIGHT - 40, 0, 0, VOID.to, HEIGHT);
+    bufferContext.drawImage(res.get('noise'), VOID.offset, 0, VOID.to, HEIGHT, 0, 0, VOID.to, HEIGHT);
     for (var i = 0; i < 4; i++) {
         var chance = 1 - 0.3 * i;
         var x = VOID.to + i;

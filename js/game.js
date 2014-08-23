@@ -34,9 +34,9 @@ function startLevel() {
     initStars();
     objects = [];
     VOID = generateVoid(0);
-    objects.push(generatePlanet(0, 0));
-    objects.push(generatePlanet(100, 150));
-    objects.push(generatePlanet(250, 50));
+    objects.push(generatePlanet(200, 10));
+    objects.push(generatePlanet(340, 170));
+    objects.push(generatePlanet(500, 70));
 }
 
 function generateVoid(pos) {
@@ -44,7 +44,7 @@ function generateVoid(pos) {
 }
 
 function generatePlanet(x, y) {
-    return spawn(TYPE.PLANET, x, y, { style : randomInt(4), population : randomInt(10)});
+    return spawn(TYPE.PLANET, x, y, { style : randomInt(4), population : 5 + randomInt(10)});
 }
 
 function tick() {
@@ -73,6 +73,8 @@ function onClicked(x, y) {
             if (selected == null) {
                 selected = objects[i];
                 objects[i].setSelected(true);
+            } else if (selected == objects[i]) {
+                selected = null;
             } else {
                 //make tunnel
                 addOrRemoveTunnel(selected, objects[i]);
