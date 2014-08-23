@@ -25,7 +25,7 @@ window.STATE = {
 window.TYPE = {
     DUMMY : ['dummy', 0],
     PLANET : ['planet', 1],
-    TUNNEL : ['tunnel', 0]
+    TUNNEL : ['tunnel', 2]
 };
 
 var ID = 0;

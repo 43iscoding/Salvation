@@ -43,6 +43,13 @@ function execute() {
 function render(_objects, _particles) {
     objects = _objects;
     particles = _particles;
+    objects.sort(function(a, b){
+        if (a.type[1] > b.type[1]) {
+            return -1;
+        } else if (b.type[1] > a.type[1]) {
+            return 1;
+        } else return 0;
+    });
     renderBackground();
 
     objects.forEach(function(object) {
