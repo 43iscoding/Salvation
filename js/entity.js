@@ -26,7 +26,10 @@ window.TYPE = {
     DUMMY : ['dummy', 0],
     PLANET : ['planet', 1],
     TUNNEL : ['tunnel', 2],
-    PORTAL : ['planet', 1]
+    PORTAL : ['planet', 1],
+    PARTICLE : {
+        DIED : ['died', -1]
+    }
 };
 
 var ID = 0;
@@ -42,7 +45,6 @@ function Entity(x, y, width, height, type, sprite, args) {
     this.width = width;
     this.height = height;
     this._type = type;
-    this.dead = false;
     this.selected = false;
     if (sprite != null && sprite != undefined) {
         this.sprite = new Sprite(res.get(sprite['name']), sprite['pos'], [width, height],
@@ -88,7 +90,6 @@ Entity.prototype = {
         return this.sprite.update(this.getState());
     },
     die : function() {
-        this.dead = true;
         this.static = true;
         this.updateSprite();
     },
@@ -102,8 +103,6 @@ Entity.prototype = {
         return false;
     },
     getState : function() {
-        if (this.dead) return STATE.DEAD;
-
         if (this.xSpeed > 0) {
             if (this.ySpeed < 0) {
                 return STATE.JUMP_RIGHT;
@@ -193,6 +192,7 @@ Block.prototype.isPlatform = function() {
 
 function Planet(x, y, args) {
     var frames = [];
+    this._dead = false;
     this.population = args['population'];
     this.counter = 0;
     frames[STATE.IDLE] = 0;
@@ -220,8 +220,14 @@ Planet.prototype.incPopulation = function() {
 Planet.prototype.corrupted = function() {
     return this.x < getVoid().to;
 };
-Planet.prototype.destroyed = function() {
-    return this.getCorruptionRate() > 0.6;
+Planet.prototype.died = function() {
+    if (this.getCorruptionRate() > 0.6 && !this._dead) {
+        this._dead = true;
+        return true;
+    }
+};
+Planet.prototype.dead = function() {
+    return this._dead;
 };
 Planet.prototype.getCorruptionRate = function() {
     return Math.max(0, Math.min(1, (getVoid().to - this.x) / this.width));
@@ -270,7 +276,10 @@ Portal.prototype = Object.create(Planet.prototype);
 Portal.prototype.toString = function() {
     return 'Portal-' + this.id +'(' + this.population + ')';
 };
-Portal.prototype.destroyed = function() {
+Portal.prototype.died = function() {
+    return false;
+};
+Portal.prototype.dead = function() {
     return false;
 };
 Portal.prototype.corrupted = function() {
@@ -338,11 +347,37 @@ Particle.prototype.act = function() {
     return false;
 };
 
+function ParticleDied(x, y, args) {
+    this.value = args['value'];
+    this.counter = 0;
+    Particle.call(this, x, y, 0, 0, TYPE.PARTICLE.DIED, {}, args);
+}
+ParticleDied.prototype = Object.create(Particle.prototype);
+ParticleDied.prototype.render = function(context) {
+    context.font = '18px Aoyagi bold';
+    context.fillStyle = 'black';
+    context.fillText('-' + String(this.value), this.x - 1, this.y - 1);
+    context.font = '18px Aoyagi bold';
+    context.fillStyle = '#BB1111';
+    context.fillText('-' + String(this.value), this.x, this.y);
+};
+ParticleDied.prototype.update = function() {
+    this.counter++;
+    if (this.counter % 5 == 0) {
+        this.x--;
+    }
+    if (this.counter % 2 == 0) {
+        this.y--;
+    }
+    if (this.counter == 50) return true;
+};
+
 window.spawn = function(type, x, y, args) {
     switch (type) {
         case TYPE.PLANET : return new Planet(x, y, args);
         case TYPE.TUNNEL : return new Tunnel(x, y, args);
         case TYPE.PORTAL : return new Portal(x, y);
+        case TYPE.PARTICLE.DIED : return new ParticleDied(x, y, args);
         default: {
             console.log("Cannot spawn: unknown type - " + type);
         }

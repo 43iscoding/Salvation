@@ -72,10 +72,6 @@ function render(_objects, _particles) {
         object.render(bufferContext);
     });
 
-    particles.forEach(function(particle) {
-        particle.render(bufferContext);
-    });
-
     if (getSelected() != null) {
         var from = getSelected().getCenter();
         var to = input.getMouse();
@@ -89,6 +85,10 @@ function render(_objects, _particles) {
     }
 
     renderVoid();
+
+    particles.forEach(function(particle) {
+        particle.render(bufferContext);
+    });
 
     renderUI();
     renderDebug();

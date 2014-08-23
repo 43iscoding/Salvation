@@ -41,6 +41,7 @@ function init() {
 function startLevel() {
     initStars();
     objects = [];
+    particles = [];
     populationLost = 0;
     totalPopulation = 0;
     populationSaved = 0;
@@ -84,7 +85,7 @@ function onClicked(x, y) {
     for (var i = 0; i < objects.length; i++) {
         if (objects[i].type != TYPE.PLANET) continue;
         var planet = objects[i];
-        if (planet.destroyed()) {
+        if (planet.dead()) {
             if (planet == selected) {
                 selected = null;
                 return;
@@ -179,7 +180,11 @@ function update() {
 function updateEntity(entity) {
     entity.update();
     if (entity.type == TYPE.PLANET) {
-        if (entity.destroyed()) {
+        if (entity.died()) {
+            var center = entity.getCenter();
+            if (entity.getPopulation() > 0) {
+                addParticle(TYPE.PARTICLE.DIED, center.x, center.y, {value : entity.getPopulation()});
+            }
             populationLost += entity.getPopulation();
             entity.resetPopulation();
             if (selected == entity) {
@@ -194,7 +199,7 @@ function updateEntity(entity) {
 
         }
     } else if (entity.type == TYPE.TUNNEL) {
-        return (entity.to.destroyed() || entity.from.destroyed() || entity.from.getPopulation() == 0);
+        return (entity.to.dead() || entity.from.dead() || entity.from.getPopulation() == 0);
     }
     return false;
 }
@@ -204,25 +209,13 @@ function updateParticle(particle) {
         return true;
     }
 
-    var collisions = particle.move(particle.xSpeed, particle.ySpeed);
-
     if (engine.offScreen(particle)) return true;
 
-    var objects = collisions.list();
-    for (var i = 0; i < objects.length; i++) {
-        if (particle.destroyOnCollision(objects[i])) return true;
-        if (particle.stopOnCollision(objects[i])) {
-            particle.xSpeed = 0;
-            particle.ySpeed = 0;
-            particle.static = true;
-        }
-    }
-
-    return particle.act();
+    return particle.update();
 }
 
-function addParticle(type, x, y) {
-    particles.push(spawn(type, x, y));
+function addParticle(type, x, y, args) {
+    particles.push(spawn(type, x, y, args));
 }
 
 }());
