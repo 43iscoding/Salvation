@@ -17,6 +17,8 @@ function init() {
 }
 
 function startLevel() {
+    initStars();
+    objects = [];
     objects.push(spawn(TYPE.PLANET, 0, 0, randomInt(4)));
     objects.push(spawn(TYPE.PLANET, 100, 150, randomInt(4)));
 }

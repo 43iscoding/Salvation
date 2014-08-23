@@ -59,8 +59,28 @@ function render(_objects, _particles) {
     execute();
 }
 
+var stars;
+
+window.initStars = function() {
+    stars = [];
+    for (var i = 0; i < WIDTH; i++) {
+        //TODO: optimize - map by color to minimize canvas state changes
+        stars.push({x : i,  y : randomInt(HEIGHT), color : getRandomStarColor()});
+    }
+};
+
 function renderBackground() {
     bufferContext.clearRect(0, 0, WIDTH, HEIGHT);
+    stars.forEach(function(star) {
+        bufferContext.fillStyle = star.color;
+        bufferContext.fillRect(star.x, star.y, 1, 1);
+    });
+}
+
+function getRandomStarColor() {
+    //its greyscale from #111111 to #AAAAAA
+    var value = 1118481 * randomInt(10);
+    return '#' + value.toString(16);
 }
 
 function renderUI() {
