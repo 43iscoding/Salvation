@@ -75,7 +75,7 @@
             { x : 90, y : 180, population : 500, escapeRate : 10, range : 450},
             { x : 190, y : 50, population : 300, range : 200},
             { x : 230, y : 150, population : 300, range : 180},
-            { x : 380, y : 80, population : 140, escapeRate : 0.1, range : 200},
+            { x : 380, y : 80, population : 140, escapeRate : 0.1, range : 200}
         ],
         portal : {x : 500, y : 70},
         voidSpeed : 1,
