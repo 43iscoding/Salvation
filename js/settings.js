@@ -17,10 +17,13 @@
     window.DEFAULT_ESCAPE_RATE = 1;
     window.DEFAULT_MAX_POPULATION = 99999;
 
+    window.DEMO = true;
+
     window.GAME_STATE = {
         LEVEL : 'level',
         MAIN_MENU : 'mainmenu',
-        AFTER_LEVEL : 'afterlevel'
+        AFTER_LEVEL : 'afterlevel',
+        THE_END : 'end'
     };
 
     window.cookie = {

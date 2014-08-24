@@ -97,8 +97,13 @@ function render(_objects, _particles) {
         particles.forEach(function(particle) {
             particle.render(bufferContext);
         });
+
+        renderLevelText();
+
     } else if (getState() == GAME_STATE.MAIN_MENU) {
         renderMainMenu();
+    } else if (getState() == GAME_STATE.THE_END) {
+        renderEpilogue();
     }
 
     renderUI();
@@ -116,6 +121,35 @@ window.initStars = function() {
     }
 };
 
+function renderLevelText() {
+    bufferContext.fillStyle = '#888888';
+    bufferContext.font = '20px Aoyagi bold';
+    bufferContext.fillText('LEVEL ' + String(getCurrentLevel() + 1), WIDTH - 50, 25);
+    bufferContext.fillStyle = '#222222';
+    bufferContext.font = '20px Aoyagi bold';
+    bufferContext.fillText('LEVEL ' + String(getCurrentLevel() + 1), WIDTH - 51, 24);
+
+    var text = getCurrentLevelConfig().text == undefined ? '' : getCurrentLevelConfig().text;
+    bufferContext.fillStyle = '#888888';
+    bufferContext.font = '20px Aoyagi bold';
+    bufferContext.fillText(text, WIDTH / 2, HEIGHT - 23);
+    var text2 = getCurrentLevelConfig().text2 == undefined ? '' : getCurrentLevelConfig().text2;
+    bufferContext.fillStyle = '#555555';
+    bufferContext.font = '15px Aoyagi bold';
+    bufferContext.fillText(text2, WIDTH / 2, HEIGHT - 5);
+}
+
+function renderEpilogue() {
+    bufferContext.clearRect(0, 0, WIDTH, HEIGHT);
+    bufferContext.fillStyle = '#888888';
+    bufferContext.font = '20px Aoyagi bold';
+    var text = 'Hurrah! You managed to complete my game!/I\'m really grateful you played it till the end/I am planning to make a postmortem containing more/game mechanics and levels./See you in LD31 :)//Made by @43ishere';
+    var lines = text.split('/');
+    for (var i = 0; i < lines.length; i++) {
+        bufferContext.fillText(lines[i], WIDTH / 2, 50 + i * 25);
+    }
+}
+
 function renderMainMenu() {
     bufferContext.drawImage(res.get('mainmenu'), 0, 0, WIDTH, HEIGHT);
     bufferContext.font = '23px Aoyagi bold';
@@ -123,9 +157,11 @@ function renderMainMenu() {
         bufferContext.fillStyle = unlocked(i) ? '#444444' : '#222222';
         bufferContext.fillText(String(i + 1), 184 + 46 * i, 73);
     }
-    for (var j = 0; j < 7; j++) {
-        bufferContext.fillStyle = unlocked(i) ? '#444444' : '#222222';
-        bufferContext.fillText(String(j + 8), 184 + 46 * j, 119);
+    if (!DEMO) {
+        for (var j = 0; j < 7; j++) {
+            bufferContext.fillStyle = unlocked(i) ? '#444444' : '#222222';
+            bufferContext.fillText(String(j + 8), 184 + 46 * j, 119);
+        }
     }
     bufferContext.font = '40px Aoyagi bold';
     bufferContext.fillStyle = '#202020';
@@ -170,15 +206,15 @@ function renderUI() {
 
         //population meter
         bufferContext.fillStyle = '#000';
-        bufferContext.fillRect(19, 19, 102, 7);
+        bufferContext.fillRect(WIDTH / 2 - 51, 19, 102, 9);
         bufferContext.fillStyle = '#333333';
-        bufferContext.fillRect(20, 20, 100, 5);
+        bufferContext.fillRect(WIDTH / 2 - 50, 20, 100, 7);
         bufferContext.fillStyle = '#661111';
-        bufferContext.fillRect(20, 20, 100 * population.lost / population.total, 5);
+        bufferContext.fillRect(WIDTH / 2 - 50, 20, 100 * population.lost / population.total, 7);
         bufferContext.fillStyle = '#116611';
-        bufferContext.fillRect(120 - 100 * population.saved / population.total, 20, 100 * population.saved / population.total, 5);
+        bufferContext.fillRect(WIDTH / 2 + 50 - 100 * population.saved / population.total, 20, 100 * population.saved / population.total, 7);
         bufferContext.fillStyle = '#000';
-        bufferContext.fillRect(120 - 100 * population.thresh, 20, 2, 5);
+        bufferContext.fillRect(WIDTH / 2 + 50 - 100 * population.thresh, 20, 2, 7);
     }
 
     if (getState() == GAME_STATE.AFTER_LEVEL) {

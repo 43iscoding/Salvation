@@ -71,13 +71,15 @@ function initUI() {
     uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 394, 47, 'level6'));
     uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 440, 47, 'level7'));
 
-    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 164, 94, 'level8'));
-    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 210, 94, 'level9'));
-    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 256, 94, 'level10'));
-    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 302, 94, 'level11'));
-    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 348, 94, 'level12'));
-    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 394, 94, 'level13'));
-    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 440, 94, 'level14'));
+    if (!DEMO) {
+        uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 164, 94, 'level8'));
+        uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 210, 94, 'level9'));
+        uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 256, 94, 'level10'));
+        uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 302, 94, 'level11'));
+        uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 348, 94, 'level12'));
+        uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 394, 94, 'level13'));
+        uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 440, 94, 'level14'));
+    }
 
     uiEntities.push(spawn(TYPE.BUTTON, 279, 123, 'lostMenu'));
     uiEntities.push(spawn(TYPE.BUTTON, 324, 123, 'lostRestart'));
@@ -203,7 +205,11 @@ function onClicked(x, y) {
                 startLevel();
             } else if (uiEntities[j].id.indexOf('Next') > 0) {
                 nextLevel();
-                startLevel();
+                if (epilogue()) {
+                    state = GAME_STATE.THE_END;
+                } else {
+                    startLevel();
+                }
             } else if (uiEntities[j].id.indexOf('Menu') > 0) {
                 state = GAME_STATE.MAIN_MENU;
             } else {

@@ -223,12 +223,12 @@ function Planet(x, y, args) {
     this.escapeRate = args['escapeRate'];
     this.showTooltip = function(context) {
         if (this.type != TYPE.PLANET) return;
-
-        context.font = '12px Aoyagi Bold';
+        if (this.escapeRate == 1) return;
+        context.font = '25px Aoyagi Bold';
         context.fillStyle = '#888888';
-        context.fillText('RATE: ' + this.escapeRate, PLANET_SIZE / 2, PLANET_SIZE + 15);
+        context.fillText('X' + this.escapeRate, PLANET_SIZE / 2, PLANET_SIZE / 2 + 7);
         context.fillStyle = '#333333';
-        context.fillText('RATE: ' + this.escapeRate, PLANET_SIZE / 2 - 1, PLANET_SIZE + 16);
+        context.fillText('X' + this.escapeRate, PLANET_SIZE / 2 - 1, PLANET_SIZE / 2 + 6);
     };
     frames[STATE.IDLE] = 0;
     var sprite = { name : 'planet', 'pos' : [args['style'] * PLANET_SIZE, 0], frames : frames, speed : 0 };
