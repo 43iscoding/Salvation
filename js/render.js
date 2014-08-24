@@ -160,20 +160,26 @@ function renderEpilogue() {
 }
 
 function renderMainMenu() {
-    bufferContext.drawImage(res.get('mainmenu'), 0, 0, WIDTH, HEIGHT);
+    if (DEMO) {
+        bufferContext.drawImage(res.get('mainmenuDemo'), 0, 0, WIDTH, HEIGHT);
+    } else {
+        bufferContext.drawImage(res.get('mainmenu'), 0, 0, WIDTH, HEIGHT);
+    }
     bufferContext.font = '23px Aoyagi bold';
     for (var i = 0; i < 7; i++) {
-        bufferContext.fillStyle = unlocked(i) ? '#444444' : '#222222';
+        bufferContext.fillStyle = unlocked(i) ? '#666' : '#383838';
         bufferContext.fillText(String(i + 1), 184 + 46 * i, 73);
     }
     if (!DEMO) {
         for (var j = 0; j < 7; j++) {
-            bufferContext.fillStyle = unlocked(i) ? '#444444' : '#222222';
+            bufferContext.fillStyle = unlocked(i) ? '#666' : '#383838';
             bufferContext.fillText(String(j + 8), 184 + 46 * j, 119);
         }
     }
     bufferContext.font = '40px Aoyagi bold';
-    bufferContext.fillStyle = '#202020';
+    bufferContext.fillStyle = '#444';
+    bufferContext.fillText('SELECT LEVEL', WIDTH / 2 - 1, HEIGHT / 2 + 65 - 1);
+    bufferContext.fillStyle = '#111';
     bufferContext.fillText('SELECT LEVEL', WIDTH / 2, HEIGHT / 2 + 65);
 }
 

@@ -252,6 +252,17 @@ Planet.prototype = Object.create(Block.prototype);
 Planet.prototype.getPopulation = function() {
     return this.population;
 };
+Planet.prototype.busySending = function() {
+    var tunnel = getTunnelFrom(this);
+    return tunnel != null && tunnel.isActive();
+};
+Planet.prototype.busyReceiving = function() {
+    var tunnels = getTunnelsTo(this);
+    for (var i = 0; i < tunnels.length; i++) {
+        if (tunnels[i].isActive()) return true;
+    }
+    return false;
+};
 Planet.prototype.resetPopulation = function() {
     this.population = 0;
 };
@@ -312,7 +323,7 @@ Planet.prototype.render = function(context) {
     }
     //render population
 
-    var population = this.maxPopulation != DEFAULT_MAX_POPULATION ? this.population + '/' + this.maxPopulation : this.population;
+    var population = this.maxPopulation != DEFAULT_MAX_POPULATION ? Math.round(this.population) + '/' + this.maxPopulation : Math.round(this.population);
 
     context.font = '15px Aoyagi Bold';
     context.fillStyle = '#888888';
@@ -366,7 +377,7 @@ function Tunnel(x, y, args) {
     this.to = args.to;
     this.fromCenter = this.from.getCenter();
     this.toCenter = this.to.getCenter();
-    this.counter = 1;
+    this.active = false;
     Entity.call(this, x, y, 0, 0, TYPE.TUNNEL);
 }
 Tunnel.prototype = Object.create(Entity.prototype);
@@ -392,16 +403,25 @@ Tunnel.prototype.render = function(context) {
     context.stroke();
 };
 Tunnel.prototype.update = function() {
-    this.counter = ++this.counter % 1;
-    if (this.counter == 0) {
-        var value = this.from.decPopulation();
-        if (value > 0) {
-            value = this.to.incPopulation(value);
-            if (value > 0) {
-                this.from.incPopulation(value);
-            }
-        }
+    if (this.to.busySending() || this.from.busyReceiving()) {
+        this.active = false;
+        return;
     }
+    var value = this.from.decPopulation();
+    if (value > 0) {
+        value = this.to.incPopulation(value);
+        if (value > 0) {
+            this.from.incPopulation(value);
+            this.active = false;
+        } else {
+            this.active = true;
+        }
+    } else {
+        this.active = false;
+    }
+};
+Tunnel.prototype.isActive = function() {
+    return this.active;
 };
 
 /****************************************************
@@ -435,10 +455,10 @@ ParticleDied.prototype = Object.create(Particle.prototype);
 ParticleDied.prototype.render = function(context) {
     context.font = '18px Aoyagi bold';
     context.fillStyle = 'black';
-    context.fillText('-' + String(this.value), this.x - 1, this.y - 1);
+    context.fillText('-' + String(Math.round(this.value)), this.x - 1, this.y - 1);
     context.font = '18px Aoyagi bold';
     context.fillStyle = '#BB1111';
-    context.fillText('-' + String(this.value), this.x, this.y);
+    context.fillText('-' + String(Math.round(this.value)), this.x, this.y);
 };
 ParticleDied.prototype.update = function() {
     this.counter++;

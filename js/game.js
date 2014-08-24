@@ -31,9 +31,9 @@ window.getState = function() {
 
 window.getPopulationInfo = function() {
     return {
-        total : totalPopulation,
-        lost : populationLost,
-        saved : portal == null ? 0 : portal.getPopulation(),
+        total : Math.round(totalPopulation),
+        lost : Math.round(populationLost),
+        saved : Math.round(portal == null ? 0 : portal.getPopulation()),
         thresh : saveThreshold,
         weLost : function() {
             return this.lost >= this.total * (1 - this.thresh);
@@ -134,6 +134,25 @@ function generateVoid(speed) {
         }};
 }
 
+window.getTunnelFrom = function(planet) {
+    for (var i = 0; i < objects.length; i++) {
+        if (objects[i].type != TYPE.TUNNEL) continue;
+
+        if (objects[i].from == planet) return objects[i];
+    }
+    return null;
+};
+
+window.getTunnelsTo = function(planet) {
+    var tunnels = [];
+    for (var i = 0; i < objects.length; i++) {
+        if (objects[i].type != TYPE.TUNNEL) continue;
+
+        if (objects[i].to == planet) tunnels.push(objects[i]);
+    }
+    return tunnels;
+};
+
 function generatePlanet(x, y, population, maxPopulation, escapeRate, range) {
     var style = planetPool.pop();
     totalPopulation += population;
@@ -165,7 +184,6 @@ function tick() {
 }
 
 function onClicked(x, y) {
-    console.log(x, y);
     objects.forEach(function(object) {
         object.setSelected(false);
     });
@@ -337,7 +355,7 @@ function updateEntity(entity) {
 
         }
     } else if (entity.type == TYPE.TUNNEL) {
-        return (entity.to.dead() || entity.from.dead() || entity.from.getPopulation() == 0);
+        return (entity.to.dead() || entity.from.dead());
     }
     return false;
 }

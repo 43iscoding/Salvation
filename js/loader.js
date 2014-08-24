@@ -1,6 +1,5 @@
 (function(){
 
-    var fullScreen = false;
 
     function loadGame() {
         initRenderer(document.getElementById('buffer'),
@@ -9,7 +8,7 @@
         initScreen(document.getElementById('buffer'), WIDTH, HEIGHT);
         input.init();
         res.onReady(loaded);
-        res.load(['planet', 'noise', 'planetOverlay', 'pallete', 'afterlevel', 'mainmenu']);
+        res.load(['planet', 'noise', 'planetOverlay', 'pallete', 'afterlevel', 'mainmenu','mainmenuDemo']);
         //res.loadSound(['explosion', 'noise1']);
     }
 
