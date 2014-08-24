@@ -2,7 +2,7 @@
 
     var level1 = {
         planets : [
-            { x : 250, y : 90, population : 1, range : 280}],
+            { x : 250, y : 90, population : 500, range : 280}],
         portal : { x : 500, y : 90 },
         voidSpeed : 0.5,
         text : 'You must escape from the void!',
