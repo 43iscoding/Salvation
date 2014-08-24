@@ -102,9 +102,14 @@ function buildLevel(config) {
     VOID = generateVoid(config.voidSpeed);
     config.planets.forEach(function (planet) {
         var population = planet.population == undefined ? DEFAULT_POPULATION : planet.population;
+        var maxPopulation = planet.maxPopulation == undefined ? DEFAULT_MAX_POPULATION : planet.maxPopulation;
+        if (maxPopulation < population) {
+            console.log('BAD CONFIG!!');
+            console.log(planet);
+        }
         var escapeRate = planet.escapeRate == undefined ? DEFAULT_ESCAPE_RATE : planet.escapeRate;
         var range = planet.range == undefined ? DEFAULT_RANGE : planet.range;
-        objects.push(generatePlanet(planet.x, planet.y, population, escapeRate, range));
+        objects.push(generatePlanet(planet.x, planet.y, population, maxPopulation, escapeRate, range));
     });
 
     objects.push(portal = spawn(TYPE.PORTAL, config.portal.x, config.portal.y));
@@ -121,10 +126,11 @@ function generateVoid(speed) {
         }};
 }
 
-function generatePlanet(x, y, population, escapeRate, range) {
+function generatePlanet(x, y, population, maxPopulation, escapeRate, range) {
     var style = planetPool.pop();
     totalPopulation += population;
-    return spawn(TYPE.PLANET, x, y, { style : style, population : population, escapeRate : escapeRate, range : range});
+    return spawn(TYPE.PLANET, x, y, { style : style, population : population, maxPopulation : maxPopulation,
+                                      escapeRate : escapeRate, range : range});
 }
 
 function resetPlanetPool() {

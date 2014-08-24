@@ -15,6 +15,7 @@
     window.DEFAULT_RANGE = 250;
     window.DEFAULT_POPULATION = 100;
     window.DEFAULT_ESCAPE_RATE = 1;
+    window.DEFAULT_MAX_POPULATION = 99999;
 
     window.GAME_STATE = {
         LEVEL : 'level',

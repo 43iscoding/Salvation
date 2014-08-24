@@ -218,6 +218,7 @@ function Planet(x, y, args) {
     this._dead = false;
     this.counter = 0;
     this.population = args['population'];
+    this.maxPopulation = args['maxPopulation'] == undefined ? DEFAULT_MAX_POPULATION : args['maxPopulation'];
     this.range = args['range'];
     this.escapeRate = args['escapeRate'];
     this.showTooltip = function(context) {
@@ -257,7 +258,13 @@ Planet.prototype.decPopulation = function() {
     return this.escapeRate;
 };
 Planet.prototype.incPopulation = function(delta) {
+    var result = 0;
     this.population += delta;
+    if (this.population > this.maxPopulation) {
+        result = this.population - this.maxPopulation;
+        this.population = this.maxPopulation;
+    }
+    return result;
 };
 Planet.prototype.corrupted = function() {
     return this.x < getVoid().to;
@@ -293,11 +300,14 @@ Planet.prototype.render = function(context) {
 
     }
     //render population
+
+    var population = this.maxPopulation != DEFAULT_MAX_POPULATION ? this.population + '/' + this.maxPopulation : this.population;
+
     context.font = '15px Aoyagi Bold';
     context.fillStyle = '#888888';
-    context.fillText(this.population, PLANET_SIZE / 2, -4);
+    context.fillText(population, PLANET_SIZE / 2, -4);
     context.fillStyle = '#333333';
-    context.fillText(this.population, PLANET_SIZE / 2 - 1, -3);
+    context.fillText(population, PLANET_SIZE / 2 - 1, -3);
 
     context.restore();
 };
@@ -375,7 +385,10 @@ Tunnel.prototype.update = function() {
     if (this.counter == 0) {
         var value = this.from.decPopulation();
         if (value > 0) {
-            this.to.incPopulation(value);
+            value = this.to.incPopulation(value);
+            if (value > 0) {
+                this.from.incPopulation(value);
+            }
         }
     }
 };
