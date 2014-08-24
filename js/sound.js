@@ -6,8 +6,8 @@
         ALL : "mute_all"
     };
 
-    var prefix = "resources/sound/";
-    var postfix = ".mp3";
+    var prefix = "res/";
+    var postfix = ".wav";
 
     var sounds = {};
 

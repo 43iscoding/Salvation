@@ -29,7 +29,8 @@ window.TYPE = {
     PORTAL : ['planet', 1],
     PARTICLE : {
         DIED : ['died', -1]
-    }
+    },
+    BUTTON : ['button', -2]
 };
 
 var ID = 0;
@@ -52,7 +53,7 @@ function Entity(x, y, width, height, type, sprite, args) {
         sprite['frames'] == undefined ? [] : sprite['frames'],
         sprite['speed'] == undefined ? 0 : sprite['speed'],
         sprite['once'] == undefined ? false : sprite['once']);
-    } else if (type != TYPE.DUMMY && type != TYPE.TUNNEL) {
+    } else if (type != TYPE.DUMMY && type != TYPE.TUNNEL && type != TYPE.BUTTON) {
         console.log('Warning - no sprite info for ' + type);
     }
     //physics
@@ -160,6 +161,17 @@ Entity.prototype = {
 };
 
 /****************************************************
+                      UI Button
+ ****************************************************/
+
+function Button(id, x, y) {
+    Entity.call(this, x, y, 38, 38, TYPE.BUTTON);
+    this.id = id;
+    this.win = id.substr(0,3) == 'win';
+}
+Button.prototype = Object.create(Entity.prototype);
+
+/****************************************************
                       Dummy cell
  ****************************************************/
 
@@ -248,9 +260,11 @@ Planet.prototype.render = function(context) {
         context.drawImage(res.get('planetOverlay'), 0, PLANET_SIZE, PLANET_SIZE, PLANET_SIZE, 0, 0, PLANET_SIZE, PLANET_SIZE);
     }
     //render population
-    context.fillStyle = '#888888';
     context.font = '15px Aoyagi Bold';
-    context.fillText(this.population, PLANET_SIZE / 2, PLANET_SIZE / 2 + 3);
+    context.fillStyle = '#888888';
+    context.fillText(this.population, PLANET_SIZE / 2, -4);
+    context.fillStyle = '#333333';
+    context.fillText(this.population, PLANET_SIZE / 2 - 1, -3);
 
     context.restore();
 };
@@ -378,6 +392,7 @@ window.spawn = function(type, x, y, args) {
         case TYPE.TUNNEL : return new Tunnel(x, y, args);
         case TYPE.PORTAL : return new Portal(x, y);
         case TYPE.PARTICLE.DIED : return new ParticleDied(x, y, args);
+        case TYPE.BUTTON : return new Button(args, x, y);
         default: {
             console.log("Cannot spawn: unknown type - " + type);
         }

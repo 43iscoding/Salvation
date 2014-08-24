@@ -57,45 +57,49 @@ function execute() {
 }
 
 function render(_objects, _particles) {
-    objects = _objects;
-    particles = _particles;
-    objects.sort(function(a, b){
-        if (a.type[1] > b.type[1]) {
-            return -1;
-        } else if (b.type[1] > a.type[1]) {
-            return 1;
-        } else return 0;
-    });
-    renderBackground();
+    if (getState() == GAME_STATE.LEVEL || getState() == GAME_STATE.AFTER_LEVEL) {
+        objects = _objects;
+        particles = _particles;
+        objects.sort(function(a, b){
+            if (a.type[1] > b.type[1]) {
+                return -1;
+            } else if (b.type[1] > a.type[1]) {
+                return 1;
+            } else return 0;
+        });
+        renderBackground();
 
-    objects.forEach(function(object) {
-        object.render(bufferContext);
-    });
+        objects.forEach(function(object) {
+            object.render(bufferContext);
+        });
 
-    if (getSelected() != null) {
-        var from = getSelected().getCenter();
-        var to = input.getMouse();
-        bufferContext.strokeStyle = '#AAA';
-        bufferContext.lineWidth = 1;
-        bufferContext.beginPath();
-        bufferContext.moveTo(from.x, from. y);
-        bufferContext.lineTo(to.x, to.y);
-        bufferContext.closePath();
-        bufferContext.stroke();
-        bufferContext.beginPath();
-        bufferContext.arc(from.x, from.y, TUNNEL_RADIUS, 0, 2 * Math.PI, false);
-        bufferContext.fillStyle = 'rgba(255, 255, 255, 0.2)';
-        bufferContext.fill();
-        bufferContext.strokeStyle = 'rgba(200, 200, 200, 0.9)';
-        bufferContext.closePath();
-        bufferContext.stroke();
+        if (getSelected() != null) {
+            var from = getSelected().getCenter();
+            var to = input.getMouse();
+            bufferContext.strokeStyle = '#AAA';
+            bufferContext.lineWidth = 1;
+            bufferContext.beginPath();
+            bufferContext.moveTo(from.x, from. y);
+            bufferContext.lineTo(to.x, to.y);
+            bufferContext.closePath();
+            bufferContext.stroke();
+            bufferContext.beginPath();
+            bufferContext.arc(from.x, from.y, TUNNEL_RADIUS, 0, 2 * Math.PI, false);
+            bufferContext.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            bufferContext.fill();
+            bufferContext.strokeStyle = 'rgba(200, 200, 200, 0.3)';
+            bufferContext.closePath();
+            bufferContext.stroke();
+        }
+
+        renderVoid();
+
+        particles.forEach(function(particle) {
+            particle.render(bufferContext);
+        });
+    } else if (getState() == GAME_STATE.MAIN_MENU) {
+        renderMainMenu();
     }
-
-    renderVoid();
-
-    particles.forEach(function(particle) {
-        particle.render(bufferContext);
-    });
 
     renderUI();
     renderDebug();
@@ -112,6 +116,12 @@ window.initStars = function() {
         stars.push({x : i,  y : randomInt(HEIGHT), color : getRandomStarColor()});
     }
 };
+
+function renderMainMenu() {
+    bufferContext.clearRect(0, 0, WIDTH, HEIGHT);
+    bufferContext.fillStyle = 'white';
+    bufferContext.fillText('MAIN MENU', WIDTH / 2, HEIGHT / 2);
+}
 
 function renderVoid() {
     var VOID = getVoid();
@@ -142,21 +152,44 @@ function getRandomStarColor() {
 }
 
 function renderUI() {
-    return;
 
-    bufferContext.textAlign = "center";
-    bufferContext.font = '12px Aoyagi bold';
-
-    bufferContext.fillStyle = '#333333';
-    bufferContext.fillRect(19, 19, 102, 17);
-    //bufferContext.fillStyle = '#99EE99';
-    //bufferContext.fillText('Population:', WIDTH / 10 + 1, HEIGHT / 17 - 1);
     var population = getPopulationInfo();
-    bufferContext.fillStyle = '#555588';
-    bufferContext.fillRect(20, 20, 100, 15);
-    bufferContext.fillStyle = '#441111';
-    bufferContext.fillRect(20, 20, 100 * (population.lost / population.total), 15);
-    //bufferContext.fillText(String((population.total - population.lost) + '/' + population.total), WIDTH / 4 + 1, HEIGHT / 17 - 1);
+
+    if (getState() == GAME_STATE.LEVEL) {
+        bufferContext.textAlign = "center";
+        bufferContext.font = '12px Aoyagi bold';
+
+        //population meter
+        bufferContext.fillStyle = '#000';
+        bufferContext.fillRect(19, 19, 102, 7);
+        bufferContext.fillStyle = '#333333';
+        bufferContext.fillRect(20, 20, 100, 5);
+        bufferContext.fillStyle = '#661111';
+        bufferContext.fillRect(20, 20, 100 * population.lost / population.total, 5);
+        bufferContext.fillStyle = '#116611';
+        bufferContext.fillRect(120 - 100 * population.saved / population.total, 20, 100 * population.saved / population.total, 5);
+        bufferContext.fillStyle = '#000';
+        bufferContext.fillRect(120 - 100 * population.thresh, 20, 2, 5);
+    }
+
+    if (getState() == GAME_STATE.AFTER_LEVEL) {
+        bufferContext.fillStyle = 'rgba(0,0,0,0.2)';
+        bufferContext.fillRect(0, 0, WIDTH, HEIGHT);
+        //after level menu.
+        if (population.weWon()) {
+            bufferContext.drawImage(res.get('afterlevel'), 0, 0, 300, 200, WIDTH / 2 - 75, HEIGHT / 2 - 50, 150, 100);
+            bufferContext.font = '30px Aoyagi bold';
+            bufferContext.fillStyle = '#2a2a2a';
+            bufferContext.fillText('VICTORY', WIDTH / 2, HEIGHT / 2 - 15);
+        } else if (population.weLost()) {
+            bufferContext.drawImage(res.get('afterlevel'), 300, 0, 300, 200, WIDTH / 2 - 75, HEIGHT / 2 - 50, 150, 100);
+            bufferContext.font = '30px Aoyagi bold';
+            bufferContext.fillStyle = '#2a2a2a';
+            bufferContext.fillText('DEFEAT', WIDTH / 2, HEIGHT / 2 - 15);
+        } else {
+            console.log("we should not be here");
+        }
+    }
 }
 
 function renderDebug() {

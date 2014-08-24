@@ -15,6 +15,12 @@
 
     window.TUNNEL_RADIUS = 250;
 
+    window.GAME_STATE = {
+        LEVEL : 'level',
+        MAIN_MENU : 'mainmenu',
+        AFTER_LEVEL : 'afterlevel'
+    };
+
     window.cookie = {
         MUTED : "muted",
         HIGHSCORE : "highscore"
