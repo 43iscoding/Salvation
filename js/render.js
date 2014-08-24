@@ -33,7 +33,7 @@ window.drawLoaded = function() {
     var value = 1118481 * (offset % 7);
     bufferContext.font = "23px Aoyagi Bold";
     bufferContext.fillStyle = '#' + value.toString(16);
-    bufferContext.fillText('PRESS ANY KEY', WIDTH / 2, HEIGHT / 4 * 3 + 20);
+    bufferContext.fillText('CLICK TO PLAY', WIDTH / 2, HEIGHT / 4 * 3 + 20);
     execute();
 };
 window.drawLoading = function(value) {
@@ -112,15 +112,24 @@ var stars;
 window.initStars = function() {
     stars = [];
     for (var i = 0; i < WIDTH; i++) {
-        //TODO: optimize - map by color to minimize canvas state changes
         stars.push({x : i,  y : randomInt(HEIGHT), color : getRandomStarColor()});
     }
 };
 
 function renderMainMenu() {
-    bufferContext.clearRect(0, 0, WIDTH, HEIGHT);
-    bufferContext.fillStyle = 'white';
-    bufferContext.fillText('MAIN MENU', WIDTH / 2, HEIGHT / 2);
+    bufferContext.drawImage(res.get('mainmenu'), 0, 0, WIDTH, HEIGHT);
+    bufferContext.font = '23px Aoyagi bold';
+    for (var i = 0; i < 7; i++) {
+        bufferContext.fillStyle = unlocked(i) ? '#444444' : '#222222';
+        bufferContext.fillText(String(i + 1), 184 + 46 * i, 73);
+    }
+    for (var j = 0; j < 7; j++) {
+        bufferContext.fillStyle = unlocked(i) ? '#444444' : '#222222';
+        bufferContext.fillText(String(j + 8), 184 + 46 * j, 119);
+    }
+    bufferContext.font = '40px Aoyagi bold';
+    bufferContext.fillStyle = '#202020';
+    bufferContext.fillText('SELECT LEVEL', WIDTH / 2, HEIGHT / 2 + 65);
 }
 
 function renderVoid() {

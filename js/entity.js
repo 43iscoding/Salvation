@@ -30,7 +30,8 @@ window.TYPE = {
     PARTICLE : {
         DIED : ['died', -1]
     },
-    BUTTON : ['button', -2]
+    BUTTON : ['button', -2],
+    LEVEL_BUTTON : ['levelButton', -2]
 };
 
 var ID = 0;
@@ -53,8 +54,6 @@ function Entity(x, y, width, height, type, sprite, args) {
         sprite['frames'] == undefined ? [] : sprite['frames'],
         sprite['speed'] == undefined ? 0 : sprite['speed'],
         sprite['once'] == undefined ? false : sprite['once']);
-    } else if (type != TYPE.DUMMY && type != TYPE.TUNNEL && type != TYPE.BUTTON) {
-        console.log('Warning - no sprite info for ' + type);
     }
     //physics
     this.static = args == undefined ? false : (args['static'] == undefined ? false : args['static']);
@@ -168,8 +167,20 @@ function Button(id, x, y) {
     Entity.call(this, x, y, 38, 38, TYPE.BUTTON);
     this.id = id;
     this.win = id.substr(0,3) == 'win';
+    this.lost = id.substr(0,4) == 'lost';
 }
 Button.prototype = Object.create(Entity.prototype);
+
+/****************************************************
+                Level selection Button
+ ****************************************************/
+
+function LevelButton(id, x, y) {
+    Entity.call(this, x, y, 40, 40, TYPE.LEVEL_BUTTON);
+    this.id = id;
+    this.level = id.substr(5);
+}
+LevelButton.prototype = Object.create(Entity.prototype);
 
 /****************************************************
                       Dummy cell
@@ -393,6 +404,7 @@ window.spawn = function(type, x, y, args) {
         case TYPE.PORTAL : return new Portal(x, y);
         case TYPE.PARTICLE.DIED : return new ParticleDied(x, y, args);
         case TYPE.BUTTON : return new Button(args, x, y);
+        case TYPE.LEVEL_BUTTON : return new LevelButton(args, x, y);
         default: {
             console.log("Cannot spawn: unknown type - " + type);
         }

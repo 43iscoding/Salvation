@@ -23,7 +23,7 @@ var PLANET_TYPES = 12;
 
 var saveThreshold = 0.75;
 
-var state = STATE.MAIN_MENU;
+var state = GAME_STATE.MAIN_MENU;
 
 window.getState = function() {
     return state;
@@ -33,7 +33,7 @@ window.getPopulationInfo = function() {
     return {
         total : totalPopulation,
         lost : populationLost,
-        saved : portal.getPopulation(),
+        saved : portal == null ? 0 : portal.getPopulation(),
         thresh : saveThreshold,
         weLost : function() {
             return this.lost >= this.total * (1 - this.thresh);
@@ -60,19 +60,29 @@ window.init = init;
 function init() {
     initUI();
     input.onClicked(onClicked);
-    startLevel();
     tick();
-    //sound.play('noise1', true);
 }
 
 function initUI() {
     uiEntities = [];
-    uiEntities.push(spawn(TYPE.BUTTON, 0, 50, 'level1'));
-    uiEntities.push(spawn(TYPE.BUTTON, 50, 50, 'level2'));
-    uiEntities.push(spawn(TYPE.BUTTON, 50, 50, 'level3'));
-    uiEntities.push(spawn(TYPE.BUTTON, 50, 50, 'level4'));
-    uiEntities.push(spawn(TYPE.BUTTON, 279, 123, 'loseMenu'));
-    uiEntities.push(spawn(TYPE.BUTTON, 324, 123, 'loseRestart'));
+    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 164, 47, 'level1'));
+    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 210, 47, 'level2'));
+    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 256, 47, 'level3'));
+    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 302, 47, 'level4'));
+    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 348, 47, 'level5'));
+    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 394, 47, 'level6'));
+    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 440, 47, 'level7'));
+
+    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 164, 94, 'level8'));
+    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 210, 94, 'level9'));
+    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 256, 94, 'level10'));
+    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 302, 94, 'level11'));
+    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 348, 94, 'level12'));
+    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 394, 94, 'level13'));
+    uiEntities.push(spawn(TYPE.LEVEL_BUTTON, 440, 94, 'level14'));
+
+    uiEntities.push(spawn(TYPE.BUTTON, 279, 123, 'lostMenu'));
+    uiEntities.push(spawn(TYPE.BUTTON, 324, 123, 'lostRestart'));
     uiEntities.push(spawn(TYPE.BUTTON, 259, 124, 'winMenu'));
     uiEntities.push(spawn(TYPE.BUTTON, 301, 124, 'winRestart'));
     uiEntities.push(spawn(TYPE.BUTTON, 342, 124, 'winNext'));
@@ -172,24 +182,34 @@ function onClicked(x, y) {
         var info = getPopulationInfo();
 
         for (var j = 0; j < uiEntities.length; j++) {
-            if (engine.containsPoint(uiEntities[j], x, y)) {
-                if (!uiEntities[j].win && info.weWon()) continue;
-                if (uiEntities[j].win && info.weLost()) continue;
+            if (!engine.containsPoint(uiEntities[j], x, y)) continue;
 
-                if (uiEntities[j].id.indexOf('Restart') > 0) {
-                    startLevel();
-                } else if (uiEntities[j].id.indexOf('Next') > 0) {
-                    nextLevel();
-                    startLevel();
-                } else if (uiEntities[j].id.indexOf('Menu') > 0) {
-                    state = GAME_STATE.MAIN_MENU;
-                } else {
-                    console.log('Unknown button: ' + uiEntities[j].id);
-                }
+            if (!uiEntities[j].win && info.weWon()) continue;
+            if (!uiEntities[j].lost && info.weLost()) continue;
+
+            if (uiEntities[j].id.indexOf('Restart') > 0) {
+                startLevel();
+            } else if (uiEntities[j].id.indexOf('Next') > 0) {
+                nextLevel();
+                startLevel();
+            } else if (uiEntities[j].id.indexOf('Menu') > 0) {
+                state = GAME_STATE.MAIN_MENU;
+            } else {
+                console.log('Unknown button: ' + uiEntities[j].id);
             }
         }
     } else if (state == GAME_STATE.MAIN_MENU) {
-        console.log('clicked in main menu!');
+        for (var k = 0; k < uiEntities.length; k++) {
+            if (!engine.containsPoint(uiEntities[k], x, y)) continue;
+            if (uiEntities[k].type != TYPE.LEVEL_BUTTON) continue;
+
+            var level = uiEntities[k].level - 1;
+
+            if (unlocked(level)) {
+                setLevel(level);
+                startLevel();
+            }
+        }
     }
 }
 
@@ -208,28 +228,13 @@ function addOrRemoveTunnel(from, to) {
 }
 
 function processInput() {
+    //TODO: completely remove keyboard support
     if (levelComplete) return;
-    //movement
-
-    if (input.isPressed(input.keys.RIGHT.key)) {
-
-    } else if (input.isPressed(input.keys.LEFT.key)) {
-
-    } else if (input.isPressed(input.keys.UP.key)) {
-
-    } else if (input.isPressed(input.keys.DOWN.key)) {
-
-    }
 
     //special
-    if (input.isPressed(input.keys.R.key)) {
+    if (input.isPressed(input.keys.R.key) && state == GAME_STATE.LEVEL) {
         input.clearInput(input.keys.R.key);
         startLevel();
-    }
-
-    if (input.isPressed(input.keys.F.key)) {
-        //input.clearInput(input.keys.F.key);
-        //loader.toggleFullscreen();
     }
 
     if (input.isPressed(input.keys.LEFT_BRACKET.key)) {
@@ -246,6 +251,8 @@ function processInput() {
 }
 
 function update() {
+    if (state == GAME_STATE.MAIN_MENU) return;
+
     for (var i = objects.length - 1; i >= 0; i--) {
         if (updateEntity(objects[i])) objects.splice(i, 1);
     }
@@ -268,6 +275,8 @@ function update() {
         if (info.weLost() || info.weWon()) {
             selected = null;
             state = GAME_STATE.AFTER_LEVEL;
+
+            if (info.weWon()) unlockLevel(getCurrentLevel() + 1);
         }
     }
 }

@@ -9,7 +9,7 @@
         initScreen(document.getElementById('buffer'), WIDTH, HEIGHT);
         input.init();
         res.onReady(loaded);
-        res.load(['planet', 'noise', 'planetOverlay', 'pallete', 'afterlevel']);
+        res.load(['planet', 'noise', 'planetOverlay', 'pallete', 'afterlevel', 'mainmenu']);
         //res.loadSound(['explosion', 'noise1']);
     }
 
