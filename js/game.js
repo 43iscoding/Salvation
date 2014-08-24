@@ -101,7 +101,10 @@ function startLevel() {
 function buildLevel(config) {
     VOID = generateVoid(config.voidSpeed);
     config.planets.forEach(function (planet) {
-        objects.push(generatePlanet(planet.x, planet.y));
+        var population = planet.population == undefined ? DEFAULT_POPULATION : planet.population;
+        var escapeRate = planet.escapeRate == undefined ? DEFAULT_ESCAPE_RATE : planet.escapeRate;
+        var range = planet.range == undefined ? DEFAULT_RANGE : planet.range;
+        objects.push(generatePlanet(planet.x, planet.y, population, escapeRate, range));
     });
 
     objects.push(portal = spawn(TYPE.PORTAL, config.portal.x, config.portal.y));
@@ -118,11 +121,10 @@ function generateVoid(speed) {
         }};
 }
 
-function generatePlanet(x, y) {
+function generatePlanet(x, y, population, escapeRate, range) {
     var style = planetPool.pop();
-    var population = 150 + randomInt(20) * 10;
     totalPopulation += population;
-    return spawn(TYPE.PLANET, x, y, { style : style, population : population});
+    return spawn(TYPE.PLANET, x, y, { style : style, population : population, escapeRate : escapeRate, range : range});
 }
 
 function resetPlanetPool() {
@@ -155,7 +157,7 @@ function onClicked(x, y) {
 
     if (state == GAME_STATE.LEVEL) {
         for (var i = 0; i < objects.length; i++) {
-            if (objects[i].type != TYPE.PLANET) continue;
+            if (objects[i].type != TYPE.PLANET && objects[i].type != TYPE.PORTAL) continue;
             var planet = objects[i];
             if (planet.dead()) {
                 if (planet == selected) {
@@ -166,14 +168,14 @@ function onClicked(x, y) {
             }
 
             if (engine.containsPoint(planet, x, y)) {
-                if (selected == null) {
+                if (selected == null && planet.type == TYPE.PLANET) {
                     selected = planet;
                     planet.setSelected(true);
                 } else if (selected == planet) {
                     selected = null;
                 } else {
                     //make tunnel
-                    if (engine.distance(selected.getCenter(), planet.getCenter()) < TUNNEL_RADIUS) {
+                    if (engine.distance(selected.getCenter(), planet.getCenter()) < selected.getRange()) {
                         addOrRemoveTunnel(selected, planet);
                     }
                     selected = null;

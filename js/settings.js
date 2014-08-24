@@ -4,7 +4,6 @@
     window.WIDTH = 640;
     window.HEIGHT = 240;
 
-    //TODO : Fullscreen support / dynamic scale
     window.SCALE = 2;
 
     window.PLANET_SIZE = 64;
@@ -13,7 +12,9 @@
 
     window.VOID_RATE = 4;
 
-    window.TUNNEL_RADIUS = 250;
+    window.DEFAULT_RANGE = 250;
+    window.DEFAULT_POPULATION = 100;
+    window.DEFAULT_ESCAPE_RATE = 1;
 
     window.GAME_STATE = {
         LEVEL : 'level',

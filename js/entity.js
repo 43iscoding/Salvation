@@ -216,14 +216,25 @@ Block.prototype.isPlatform = function() {
 function Planet(x, y, args) {
     var frames = [];
     this._dead = false;
-    this.population = args['population'];
     this.counter = 0;
+    this.population = args['population'];
+    this.range = args['range'];
+    this.escapeRate = args['escapeRate'];
+    this.showTooltip = function(context) {
+        if (this.type != TYPE.PLANET) return;
+
+        context.font = '12px Aoyagi Bold';
+        context.fillStyle = '#888888';
+        context.fillText('RATE: ' + this.escapeRate, PLANET_SIZE / 2, PLANET_SIZE + 15);
+        context.fillStyle = '#333333';
+        context.fillText('RATE: ' + this.escapeRate, PLANET_SIZE / 2 - 1, PLANET_SIZE + 16);
+    };
     frames[STATE.IDLE] = 0;
     var sprite = { name : 'planet', 'pos' : [args['style'] * PLANET_SIZE, 0], frames : frames, speed : 0 };
     if (args['sprite']) {
         sprite = args['sprite'];
     }
-    Block.call(this, x, y, TYPE.PLANET, sprite);
+    Block.call(this, x, y, args['portal'] ? TYPE.PORTAL : TYPE.PLANET, sprite);
 }
 Planet.prototype = Object.create(Block.prototype);
 Planet.prototype.getPopulation = function() {
@@ -233,12 +244,20 @@ Planet.prototype.resetPopulation = function() {
     this.population = 0;
 };
 Planet.prototype.decPopulation = function() {
-    if (this.population == 0) return false;
-    this.population--;
-    return true;
+    if (this.population == 0) return 0;
+
+    if (this.population < this.escapeRate) {
+        var result = this.population;
+        this.population = 0;
+        return result;
+    }
+
+    this.population -= this.escapeRate;
+
+    return this.escapeRate;
 };
-Planet.prototype.incPopulation = function() {
-    this.population++;
+Planet.prototype.incPopulation = function(delta) {
+    this.population += delta;
 };
 Planet.prototype.corrupted = function() {
     return this.x < getVoid().to;
@@ -267,8 +286,11 @@ Planet.prototype.render = function(context) {
     }
     if (this.selected) {
         context.drawImage(res.get('planetOverlay'), PLANET_SIZE, PLANET_SIZE, PLANET_SIZE, PLANET_SIZE, 0, 0, PLANET_SIZE, PLANET_SIZE);
+        this.showTooltip(context);
     } else if (this.mouseOver()) {
         context.drawImage(res.get('planetOverlay'), 0, PLANET_SIZE, PLANET_SIZE, PLANET_SIZE, 0, 0, PLANET_SIZE, PLANET_SIZE);
+        this.showTooltip(context);
+
     }
     //render population
     context.font = '15px Aoyagi Bold';
@@ -285,6 +307,9 @@ Planet.prototype.toString = function() {
 Planet.prototype.update = function() {
     this.counter = ++this.counter % 40;
 };
+Planet.prototype.getRange = function() {
+    return this.range;
+};
 
 /****************************************************
                          Portal
@@ -294,7 +319,7 @@ function Portal(x, y) {
     var frames = [];
     frames[STATE.IDLE] = 0;
     var sprite = { name : 'planet', 'pos' : [0, PLANET_SIZE], frames : frames, speed : 0 };
-    Planet.call(this, x, y, { sprite : sprite, population : 0});
+    Planet.call(this, x, y, { sprite : sprite, population : 0, portal : true});
 }
 Portal.prototype = Object.create(Planet.prototype);
 
@@ -347,7 +372,12 @@ Tunnel.prototype.render = function(context) {
 };
 Tunnel.prototype.update = function() {
     this.counter = ++this.counter % 1;
-    if (this.counter == 0 && this.from.decPopulation()) this.to.incPopulation();
+    if (this.counter == 0) {
+        var value = this.from.decPopulation();
+        if (value > 0) {
+            this.to.incPopulation(value);
+        }
+    }
 };
 
 /****************************************************
