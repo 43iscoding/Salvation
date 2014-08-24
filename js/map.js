@@ -85,6 +85,8 @@
 
     var MAPS = [level1, level2, level3, level4, level5, level6, level7];
 
+    var perfect = {};
+
     var TOTAL_LEVELS = DEMO ? 7 : 14;
 
     var currentLevel = 0;
@@ -112,6 +114,21 @@
 
     window.unlockLevel = function(level) {
         levelUnlocked = Math.max(level, levelUnlocked);
+    };
+
+    window.setPerfect = function(level) {
+        perfect[level] = true;
+    };
+
+    window.isPerfect = function(level) {
+        return perfect[level] == true;
+    };
+
+    window.allPerfect = function() {
+        for (var i = 0; i < TOTAL_LEVELS; i++) {
+            if (!isPerfect(i)) return false;
+        }
+        return true;
     };
 
     window.previousLevel = function() {

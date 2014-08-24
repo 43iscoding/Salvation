@@ -327,7 +327,12 @@ function update() {
             selected = null;
             state = GAME_STATE.AFTER_LEVEL;
 
-            if (info.weWon()) unlockLevel(getCurrentLevel() + 1);
+            if (info.weWon()) {
+                unlockLevel(getCurrentLevel() + 1);
+                if (info.perfect()) {
+                    setPerfect(getCurrentLevel());
+                }
+            }
         }
     }
 }

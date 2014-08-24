@@ -149,7 +149,8 @@ function renderEpilogue() {
     bufferContext.clearRect(0, 0, WIDTH, HEIGHT);
     bufferContext.fillStyle = '#888888';
     bufferContext.font = '20px Aoyagi bold';
-    var text = 'Hurrah! You managed to complete my game!/I\'m really grateful you played it till the end/I am planning to make a postmortem containing more/game mechanics and levels./See you in LD31 :)';
+    var firstLine = allPerfect() ? 'Whoa! You scored perfect on each level! You\'re a true try-hard, my friend <3' : 'Hurrah! You managed to complete my game!';
+    var text = firstLine + '/I\'m really grateful you played it till the end/I am planning to make a postmortem containing more/game mechanics and levels./See you in LD31 :)';
     var lines = text.split('/');
     for (var i = 0; i < lines.length; i++) {
         bufferContext.fillText(lines[i], WIDTH / 2, 50 + i * 25);
@@ -167,7 +168,7 @@ function renderMainMenu() {
     }
     bufferContext.font = '23px Aoyagi bold';
     for (var i = 0; i < 7; i++) {
-        bufferContext.fillStyle = unlocked(i) ? '#666' : '#383838';
+        bufferContext.fillStyle = !unlocked(i) ? '#383838' : (isPerfect(i) ? '#EEC700' : '#666');
         bufferContext.fillText(String(i + 1), 184 + 46 * i, 73);
     }
     if (!DEMO) {
