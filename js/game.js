@@ -3,8 +3,6 @@
 var objects = [];
 var particles = [];
 
-var levelComplete = false;
-
 var selected = null;
 
 var counter = 0;
@@ -97,16 +95,27 @@ function startLevel() {
     populationLost = 0;
     totalPopulation = 0;
     selected = null;
-    VOID = generateVoid(0);
-    objects.push(generatePlanet(50, 100));
-    objects.push(generatePlanet(200, 30));
-    objects.push(generatePlanet(340, 170));
-    portal = spawn(TYPE.PORTAL, 500, 70);
-    objects.push(portal);
+    buildLevel(getCurrentLevelConfig());
 }
 
-function generateVoid(pos) {
-    return {to : pos, offset: randomInt(300)};
+function buildLevel(config) {
+    VOID = generateVoid(config.voidSpeed);
+    config.planets.forEach(function (planet) {
+        objects.push(generatePlanet(planet.x, planet.y));
+    });
+
+    objects.push(portal = spawn(TYPE.PORTAL, config.portal.x, config.portal.y));
+}
+
+function generateVoid(speed) {
+    return {
+        speed : speed,
+        to : 0,
+        offset: randomInt(300),
+        update : function(delta) {
+            this.to += delta * speed;
+            this.offset = randomInt(300);
+        }};
 }
 
 function generatePlanet(x, y) {
@@ -136,12 +145,7 @@ function tick() {
     processInput();
     update();
     render(objects, particles);
-    if (levelComplete) win();
     setTimeout(tick, 1000 / fps - (currentTime() - from));
-}
-
-function win() {
-    //TODO: move to next level
 }
 
 function onClicked(x, y) {
@@ -229,7 +233,6 @@ function addOrRemoveTunnel(from, to) {
 
 function processInput() {
     //TODO: completely remove keyboard support
-    if (levelComplete) return;
 
     //special
     if (input.isPressed(input.keys.R.key) && state == GAME_STATE.LEVEL) {
@@ -266,9 +269,9 @@ function update() {
     var info = getPopulationInfo();
 
     if (info.weLost()) {
-        VOID = generateVoid(VOID.to + 2);
+        VOID.update(2);
     } else if (!info.weWon() && counter % VOID_RATE == 0) {
-        VOID = generateVoid(++VOID.to);
+        VOID.update(1);
     }
 
     if (state == GAME_STATE.LEVEL) {
