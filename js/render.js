@@ -139,15 +139,24 @@ function renderLevelText() {
     bufferContext.fillText(text2, WIDTH / 2, HEIGHT - 5);
 }
 
+var twitterMouseover = false;
+
+window.twitterMouseover = function(mouseover) {
+    twitterMouseover = mouseover;
+};
+
 function renderEpilogue() {
     bufferContext.clearRect(0, 0, WIDTH, HEIGHT);
     bufferContext.fillStyle = '#888888';
     bufferContext.font = '20px Aoyagi bold';
-    var text = 'Hurrah! You managed to complete my game!/I\'m really grateful you played it till the end/I am planning to make a postmortem containing more/game mechanics and levels./See you in LD31 :)//Made by @43ishere';
+    var text = 'Hurrah! You managed to complete my game!/I\'m really grateful you played it till the end/I am planning to make a postmortem containing more/game mechanics and levels./See you in LD31 :)';
     var lines = text.split('/');
     for (var i = 0; i < lines.length; i++) {
         bufferContext.fillText(lines[i], WIDTH / 2, 50 + i * 25);
     }
+    bufferContext.fillText('Made by', 281, 200);
+    bufferContext.fillStyle = twitterMouseover ? '#8888CC' : '#6666DD';
+    bufferContext.fillText('@43ishere', 363, 200);
 }
 
 function renderMainMenu() {

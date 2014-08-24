@@ -23,6 +23,8 @@ var saveThreshold = 0.75;
 
 var state = GAME_STATE.MAIN_MENU;
 
+var twitter = null;
+
 window.getState = function() {
     return state;
 };
@@ -86,6 +88,8 @@ function initUI() {
     uiEntities.push(spawn(TYPE.BUTTON, 259, 124, 'winMenu'));
     uiEntities.push(spawn(TYPE.BUTTON, 301, 124, 'winRestart'));
     uiEntities.push(spawn(TYPE.BUTTON, 342, 124, 'winNext'));
+
+    twitter = spawn(TYPE.LINK, 315, 186, 'http://www.twitter.com/43ishere');
 }
 
 function startLevel() {
@@ -228,6 +232,10 @@ function onClicked(x, y) {
                 startLevel();
             }
         }
+    } else if (state == GAME_STATE.THE_END) {
+        if (engine.containsPoint(twitter, input.getMouse().x, input.getMouse().y)) {
+            window.location = twitter.link;
+        }
     }
 }
 
@@ -269,6 +277,9 @@ function processInput() {
 
 function update() {
     if (state == GAME_STATE.MAIN_MENU) return;
+    if (state == GAME_STATE.THE_END) {
+        twitterMouseover(engine.containsPoint(twitter, input.getMouse().x, input.getMouse().y));
+    }
 
     for (var i = objects.length - 1; i >= 0; i--) {
         if (updateEntity(objects[i])) objects.splice(i, 1);

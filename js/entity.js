@@ -31,7 +31,8 @@ window.TYPE = {
         DIED : ['died', -1]
     },
     BUTTON : ['button', -2],
-    LEVEL_BUTTON : ['levelButton', -2]
+    LEVEL_BUTTON : ['levelButton', -2],
+    LINK : ['link']
 };
 
 var ID = 0;
@@ -181,6 +182,16 @@ function LevelButton(id, x, y) {
     this.level = id.substr(5);
 }
 LevelButton.prototype = Object.create(Entity.prototype);
+
+/****************************************************
+    Object for handling twitter link in epilogue
+****************************************************/
+
+function Link(link, x, y) {
+    Entity.call(this, x, y, 85, 14, TYPE.LINK);
+    this.link = link;
+}
+Link.prototype = Object.create(Entity.prototype);
 
 /****************************************************
                       Dummy cell
@@ -448,6 +459,7 @@ window.spawn = function(type, x, y, args) {
         case TYPE.PARTICLE.DIED : return new ParticleDied(x, y, args);
         case TYPE.BUTTON : return new Button(args, x, y);
         case TYPE.LEVEL_BUTTON : return new LevelButton(args, x, y);
+        case TYPE.LINK : return new Link(args, x, y);
         default: {
             console.log("Cannot spawn: unknown type - " + type);
         }
