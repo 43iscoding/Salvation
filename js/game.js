@@ -39,7 +39,10 @@ window.getPopulationInfo = function() {
             return this.lost >= this.total * (1 - this.thresh);
         },
         weWon : function() {
-            return this.saved >= this.total * this.thresh;
+            return this.total == this.saved + this.lost && this.saved >= this.total * this.thresh;
+        },
+        perfect : function() {
+            return this.total == this.saved;
         }
     };
 };
@@ -110,8 +113,7 @@ function buildLevel(config) {
         var population = planet.population == undefined ? DEFAULT_POPULATION : planet.population;
         var maxPopulation = planet.maxPopulation == undefined ? DEFAULT_MAX_POPULATION : planet.maxPopulation;
         if (maxPopulation < population) {
-            console.log('BAD CONFIG!!');
-            console.log(planet);
+            population = maxPopulation;
         }
         var escapeRate = planet.escapeRate == undefined ? DEFAULT_ESCAPE_RATE : planet.escapeRate;
         var range = planet.range == undefined ? DEFAULT_RANGE : planet.range;
@@ -163,6 +165,7 @@ function tick() {
 }
 
 function onClicked(x, y) {
+    console.log(x, y);
     objects.forEach(function(object) {
         object.setSelected(false);
     });
@@ -180,9 +183,11 @@ function onClicked(x, y) {
             }
 
             if (engine.containsPoint(planet, x, y)) {
-                if (selected == null && planet.type == TYPE.PLANET) {
-                    selected = planet;
-                    planet.setSelected(true);
+                if (selected == null) {
+                    if (planet.type == TYPE.PLANET) {
+                        selected = planet;
+                        planet.setSelected(true);
+                    }
                 } else if (selected == planet) {
                     selected = null;
                 } else {

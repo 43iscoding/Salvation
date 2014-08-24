@@ -232,9 +232,16 @@ function renderUI() {
         //after level menu.
         if (population.weWon()) {
             bufferContext.drawImage(res.get('afterlevel'), 0, 0, 300, 200, WIDTH / 2 - 75, HEIGHT / 2 - 50, 150, 100);
-            bufferContext.font = '30px Aoyagi bold';
-            bufferContext.fillStyle = '#2a2a2a';
-            bufferContext.fillText('VICTORY', WIDTH / 2, HEIGHT / 2 - 15);
+            bufferContext.font = '29px Aoyagi bold';
+            bufferContext.fillStyle = 'black';
+            bufferContext.fillText('VICTORY', WIDTH / 2, HEIGHT / 2 - 17);
+            if (population.perfect()) {
+                bufferContext.font = '20px Aoyagi bold';
+                bufferContext.fillStyle = '#2A2A2A';
+                bufferContext.fillText('PERFECT', WIDTH / 2 - 1, HEIGHT / 2 - 1);
+                bufferContext.fillStyle = '#EEC700';
+                bufferContext.fillText('PERFECT', WIDTH / 2, HEIGHT / 2);
+            }
         } else if (population.weLost()) {
             bufferContext.drawImage(res.get('afterlevel'), 300, 0, 300, 200, WIDTH / 2 - 75, HEIGHT / 2 - 50, 150, 100);
             bufferContext.font = '30px Aoyagi bold';
