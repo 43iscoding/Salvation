@@ -277,13 +277,31 @@ function addOrRemoveTunnel(from, to) {
 }
 
 function processInput() {
-    //TODO: completely remove keyboard support
-
-    //special
-    if (input.isPressed(input.keys.R.key) && state == GAME_STATE.LEVEL) {
-        input.clearInput(input.keys.R.key);
-        startLevel();
+    //restart
+    if (input.isPressed(input.keys.R.key)) {
+        if (state == GAME_STATE.LEVEL || state == GAME_STATE.AFTER_LEVEL) {
+            input.clearInput(input.keys.R.key);
+            startLevel();
+        }
     }
+    //proceed
+    if (input.isPressed(input.keys.SPACE.key || input.isPressed(input.keys.ENTER.key))) {
+        if (state == GAME_STATE.AFTER_LEVEL && getPopulationInfo().weWon()) {
+            nextLevel();
+            if (epilogue()) {
+                state = GAME_STATE.THE_END;
+            } else {
+                startLevel();
+            }
+        }
+    }
+
+    //go to menu
+    if (input.isPressed(input.keys.ESCAPE.key)) {
+        state = GAME_STATE.MAIN_MENU;
+    }
+
+    //TODO REMOVE!!!!!!
 
     if (input.isPressed(input.keys.LEFT_BRACKET.key)) {
         input.clearInput(input.keys.LEFT_BRACKET.key);

@@ -133,7 +133,7 @@
             BACKSPACE: {key: 'BACKSPACE', code: 8}, TAB: {key: 'TAB', code: 9}, ENTER: {key: 'ENTER', code: 13}, SHIFT: {key: 'SHIFT', code: 16},
             CTRL: {key: 'CTRL', code: 17}, ALT: {key: 'ALT', code: 18}, HOME: {key: 'HOME', code: 36}, END: {key: 'END', code: 35},
             INSERT: {key: 'INSERT', code: 45}, DELETE: {key: 'DELETE', code: 46}, PAGE_UP: {key: 'PAGE_UP', code: 33}, PAGE_DOWN: {key: 'PAGE_DOWN', code: 34},
-            CAPSLOCK: {key: 'CAPSLOCK', code: 20}, SPACE: {key: 'SPACE', code: 32},
+            CAPSLOCK: {key: 'CAPSLOCK', code: 20}, SPACE: {key: 'SPACE', code: 32}, ESCAPE: {key: 'ESCAPE', code : 27},
 
             LEFT: {key: 'LEFT', code: 37}, UP: {key: 'UP', code: 38}, RIGHT: {key: 'RIGHT', code: 39}, DOWN: {key: 'DOWN', code: 40},
 
