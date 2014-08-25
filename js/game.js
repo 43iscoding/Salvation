@@ -203,11 +203,13 @@ function onClicked(x, y) {
             if (engine.containsPoint(planet, x, y)) {
                 if (selected == null) {
                     if (planet.type == TYPE.PLANET) {
+                        sound.play('select');
                         selected = planet;
                         planet.setSelected(true);
                     }
                 } else if (selected == planet) {
                     selected = null;
+                    sound.play('deselect')
                 } else {
                     //make tunnel
                     if (engine.distance(selected.getCenter(), planet.getCenter()) < selected.getRange()) {
@@ -218,7 +220,10 @@ function onClicked(x, y) {
                 return;
             }
         }
-        selected = null;
+        if (selected != null) {
+            sound.play('deselect');
+            selected = null;
+        }
     } else if (state == GAME_STATE.AFTER_LEVEL) {
         var info = getPopulationInfo();
 
@@ -268,15 +273,26 @@ function addOrRemoveTunnel(from, to) {
         var tunnel = objects[i];
         if (tunnel.from == from) {
             objects.splice(i, 1);
-            if (tunnel.to == to) return;
+            if (tunnel.to == to) {
+                sound.play('tunnelDestroy');
+                return;
+            }
         } else if (tunnel.from == to && tunnel.to == from) {
             objects.splice(i, 1);
         }
     }
     objects.push(spawn(TYPE.TUNNEL, 0, 0, {from: from, to : to}));
+    sound.play('tunnelCreate');
 }
 
 function processInput() {
+
+    //toggle mute
+    if (input.isPressed(input.keys.M.key)) {
+        input.clearInput(input.keys.M.key);
+        sound.toggleMute();
+    }
+
     //restart
     if (input.isPressed(input.keys.R.key)) {
         if (state == GAME_STATE.LEVEL || state == GAME_STATE.AFTER_LEVEL) {
@@ -346,19 +362,39 @@ function update() {
             state = GAME_STATE.AFTER_LEVEL;
 
             if (info.weWon()) {
+                sound.play('victory');
                 unlockLevel(getCurrentLevel() + 1);
                 if (info.perfect()) {
                     setPerfect(getCurrentLevel());
                 }
+            } else if (info.weLost()) {
+                sound.play('defeat');
             }
+        }
+
+        //sound
+        if (currentTime() > lastTunnelSound + 1000 && activeTunnel()) {
+            lastTunnelSound = currentTime();
+            sound.play('tunnelChannel');
         }
     }
 }
+
+function activeTunnel() {
+    for (var i = 0; i < objects.length; i++) {
+        if (objects[i].type != TYPE.TUNNEL) return;
+        if (objects[i].isActive()) return true;
+    }
+    return false;
+}
+
+var lastTunnelSound = 0;
 
 function updateEntity(entity) {
     entity.update();
     if (entity.type == TYPE.PLANET) {
         if (entity.died()) {
+            sound.play('planetDestroy');
             var center = entity.getCenter();
             if (entity.getPopulation() > 0) {
                 addParticle(TYPE.PARTICLE.DIED, center.x, center.y, {value : entity.getPopulation()});

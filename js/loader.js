@@ -9,7 +9,7 @@
         input.init();
         res.onReady(loaded);
         res.load(['planet', 'noise', 'planetOverlay', 'pallete', 'afterlevel', 'mainmenu','mainmenuDemo']);
-        //res.loadSound(['explosion', 'noise1']);
+        res.loadSound(['select', 'deselect','tunnelCreate', 'tunnelDestroy', 'planetDestroy', 'tunnelChannel', 'victory', 'defeat']);
     }
 
     function initScreen(canvas, width, height) {

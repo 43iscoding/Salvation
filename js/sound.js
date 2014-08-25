@@ -6,12 +6,12 @@
         ALL : "mute_all"
     };
 
-    var prefix = "res/";
-    var postfix = ".wav";
+    var prefix = "res/sound/";
+    var postfix = ".mp3";
 
     var sounds = {};
 
-    var BUFFER_SIZE = 3;
+    var BUFFER_SIZE = 5;
 
     var state = res.getCookie(cookie.MUTED, muted.NONE);
 
@@ -34,6 +34,7 @@
             if (!audio.paused && audio.currentTime > 0) {
                 continue;
             }
+            audio.volume = 0.15;
             audio.play();
             muteIfNeeded(audio, buffer[i].music);
             audio.onended = function() {
@@ -56,8 +57,6 @@
 
     function toggleMute() {
         if (state == muted.NONE) {
-            state = muted.MUSIC;
-        } else if (state == muted.MUSIC) {
             state = muted.ALL;
         } else {
             state = muted.NONE;
