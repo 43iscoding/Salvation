@@ -316,20 +316,6 @@ function processInput() {
     if (input.isPressed(input.keys.ESCAPE.key)) {
         state = GAME_STATE.MAIN_MENU;
     }
-
-    //TODO REMOVE!!!!!!
-
-    if (input.isPressed(input.keys.LEFT_BRACKET.key)) {
-        input.clearInput(input.keys.LEFT_BRACKET.key);
-        previousLevel();
-        startLevel();
-    }
-
-    if (input.isPressed(input.keys.RIGHT_BRACKET.key)) {
-        input.clearInput(input.keys.RIGHT_BRACKET.key);
-        nextLevel();
-        startLevel();
-    }
 }
 
 function update() {
