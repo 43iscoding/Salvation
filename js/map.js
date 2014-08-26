@@ -139,8 +139,4 @@
         currentLevel = level;
     };
 
-    window.getMap = function() {
-        return MAPS[getCurrentLevel()];
-    };
-
 }());

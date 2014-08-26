@@ -39,10 +39,10 @@ window.getPopulationInfo = function() {
             return this.lost >= this.total * (1 - this.thresh);
         },
         weWon : function() {
-            return this.total == this.saved + this.lost && this.saved >= this.total * this.thresh;
+            return this.total - 1 < this.saved + this.lost && this.saved >= this.total * this.thresh;
         },
         perfect : function() {
-            return this.total == this.saved;
+            return this.total - 1 < this.saved;
         }
     };
 };
