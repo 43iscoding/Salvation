@@ -27,8 +27,9 @@
     };
 
     window.cookie = {
-        MUTED : "muted",
-        HIGHSCORE : "highscore"
+        MUTED : "salvation.muted",
+        UNLOCKED : "salvation.unlocked",
+        PERFECT : "salvation.perfect"
     };
 
     window.randomInt = function(to) {

@@ -85,12 +85,12 @@
 
     var MAPS = [level1, level2, level3, level4, level5, level6, level7];
 
-    var perfect = {};
+    var perfect = parsePerfect(res.getCookie(cookie.PERFECT));
 
     var TOTAL_LEVELS = DEMO ? 7 : 14;
 
     var currentLevel = 0;
-    var levelUnlocked = 0;
+    var levelUnlocked = res.getCookie(cookie.UNLOCKED, 0);
 
     window.unlocked = function(level) {
         return level <= levelUnlocked;
@@ -114,11 +114,33 @@
 
     window.unlockLevel = function(level) {
         levelUnlocked = Math.max(level, levelUnlocked);
+        res.setCookie(cookie.UNLOCKED, levelUnlocked);
     };
 
     window.setPerfect = function(level) {
         perfect[level] = true;
+        savePerfect();
     };
+
+    function parsePerfect(data) {
+        var perfect = {};
+        if (data != null) {
+            var levels = data.split(',');
+            levels.forEach(function(level) {
+                perfect[String(level)] = true;
+            });
+        }
+        return perfect;
+    }
+
+    function savePerfect() {
+        var data = '';
+        for (var level in perfect) {
+            if (!perfect.hasOwnProperty(level)) continue;
+            data += (parseInt(level)) + ',';
+        }
+        res.setCookie(cookie.PERFECT, data.substr(0, data.length - 1));
+    }
 
     window.isPerfect = function(level) {
         return perfect[level] == true;
