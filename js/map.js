@@ -105,11 +105,11 @@
     };
 
     window.nextLevel = function() {
-        currentLevel = ++currentLevel;
+        currentLevel = Math.min(++currentLevel, TOTAL_LEVELS);
     };
 
     window.epilogue = function() {
-        return currentLevel == TOTAL_LEVELS;
+        return currentLevel >= TOTAL_LEVELS;
     };
 
     window.unlockLevel = function(level) {
@@ -132,7 +132,7 @@
     };
 
     window.previousLevel = function() {
-        if (--currentLevel < 0) currentLevel = MAPS.length - 1;
+       currentLevel = Math.max(--currentLevel, 0);
     };
 
     window.setLevel = function(level) {

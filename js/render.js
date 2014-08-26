@@ -261,7 +261,7 @@ function renderUI() {
 }
 
 function renderDebug() {
-    if (!DEBUG) return;
+    if (!DEBUG || true) return;
 
     //objects and particles
     bufferContext.textAlign = "center";

@@ -5,21 +5,7 @@
  ***************************************************************************/
 
 window.STATE = {
-    IDLE : 'IDLE',
-    WALK_RIGHT : 'WALK_RIGHT',
-    WALK_LEFT : 'WALK_LEFT',
-    FALL : 'FALL',
-    JUMP : 'JUMP',
-    JUMP_RIGHT : 'JUMP_RIGHT',
-    JUMP_LEFT : 'JUMP_LEFT',
-    FALL_RIGHT : 'FALL_RIGHT',
-    FALL_LEFT : 'FALL_LEFT',
-    DEAD : 'DEAD',
-    IDLE_RIGHT : 'IDLE_RIGHT',
-    IDLE_LEFT : 'IDLE_LEFT',
-    FROZEN : 'FROZEN',
-    WITHERED : 'WITHERED',
-    SLEEPING : 'SLEEPING'
+    IDLE : 'IDLE'
 };
 
 window.TYPE = {
@@ -61,7 +47,6 @@ function Entity(x, y, width, height, type, sprite, args) {
     this.xSpeed = args == undefined ? 0 : (args['xSpeed'] == undefined ? 0 : args['xSpeed']);
     this.ySpeed = args == undefined ? 0 : (args['ySpeed'] == undefined ? 0 : args['ySpeed']);
     this.velocity = args == undefined ? 0 : (args['velocity'] == undefined ? 0 : args['velocity']);
-    this.jumpSpeed = args == undefined ? 0 : (args['jump'] == undefined ? 0 : args['jump']);
 }
 
 Entity.prototype = {
@@ -76,9 +61,6 @@ Entity.prototype = {
     canLeaveScreen : function() {
         return false;
     },
-    move : function(dx, dy) {
-        return engine.move(this, dx, dy);
-    },
     getCenter : function() {
         return { x : this.x + this.width / 2, y : this.y + this.height / 2};
     },
@@ -90,17 +72,7 @@ Entity.prototype = {
         if (this.sprite == null || this.sprite == undefined) return;
         return this.sprite.update(this.getState());
     },
-    die : function() {
-        this.static = true;
-        this.updateSprite();
-    },
     isPlatform : function() {
-        return false;
-    },
-    isBouncy : function() {
-        return false;
-    },
-    isFatal : function() {
         return false;
     },
     getState : function() {
@@ -129,31 +101,6 @@ Entity.prototype = {
         context.translate(this.x, this.y);
         this.sprite.render(context);
         context.restore();
-    },
-    moveRight : function(ratio) {
-        this.xSpeed = Math.min(this.xSpeed + this.velocity / 5 * ratio, this.velocity);
-    },
-    moveLeft : function(ratio) {
-        this.xSpeed = Math.max(this.xSpeed - this.velocity / 5 * ratio, -this.velocity);
-    },
-    jump : function() {
-        this.ySpeed = -this.jumpSpeed;
-    },
-    applyFriction : function(friction) {
-        if (this.xSpeed > 0) {
-            this.xSpeed = Math.max(this.xSpeed - friction, 0);
-        } else if (this.xSpeed < 0) {
-            this.xSpeed = Math.min(this.xSpeed + friction, 0);
-        }
-    },
-    applyGravity : function(gravity) {
-        this.ySpeed = Math.min(this.ySpeed + gravity, FREE_FALL);
-    },
-    forceMovement : function() {
-        return false;
-    },
-    destroyOnCollision : function(entity) {
-        return false;
     },
     setSelected : function(selected) {
         this.selected = selected;
@@ -438,9 +385,6 @@ Particle.prototype.getState = function() {
 };
 Particle.prototype.canLeaveScreen = function() {
     return true;
-};
-Particle.prototype.stopOnCollision = function(entity) {
-    return false;
 };
 Particle.prototype.act = function() {
     return false;

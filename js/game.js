@@ -96,6 +96,10 @@ function initUI() {
 }
 
 function startLevel() {
+    if (epilogue() || state == GAME_STATE.THE_END) {
+        state = GAME_STATE.THE_END;
+        return;
+    }
     state = GAME_STATE.LEVEL;
     initStars();
     resetPlanetPool();
@@ -237,11 +241,7 @@ function onClicked(x, y) {
                 startLevel();
             } else if (uiEntities[j].id.indexOf('Next') > 0) {
                 nextLevel();
-                if (epilogue()) {
-                    state = GAME_STATE.THE_END;
-                } else {
-                    startLevel();
-                }
+                startLevel();
             } else if (uiEntities[j].id.indexOf('Menu') > 0) {
                 state = GAME_STATE.MAIN_MENU;
             } else {
@@ -315,6 +315,22 @@ function processInput() {
     //go to menu
     if (input.isPressed(input.keys.ESCAPE.key)) {
         state = GAME_STATE.MAIN_MENU;
+    }
+
+    if (DEBUG) {
+        if (input.isPressed(input.keys.RIGHT_BRACKET.key)) {
+            input.clearInput(input.keys.RIGHT_BRACKET.key);
+            state = GAME_STATE.LEVEL;
+            nextLevel();
+            startLevel();
+        }
+
+        if (input.isPressed(input.keys.LEFT_BRACKET.key)) {
+            input.clearInput(input.keys.LEFT_BRACKET.key);
+            state = GAME_STATE.LEVEL;
+            previousLevel();
+            startLevel();
+        }
     }
 }
 
