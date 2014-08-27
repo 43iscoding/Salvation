@@ -186,6 +186,7 @@ function renderMainMenu() {
 
 function renderVoid() {
     var VOID = getVoid();
+    if (VOID.to <= 0) return;
     bufferContext.drawImage(res.get('noise'), VOID.offset, 0, VOID.to, HEIGHT, 0, 0, VOID.to, HEIGHT);
     for (var i = 0; i < 4; i++) {
         var chance = 1 - 0.3 * i;

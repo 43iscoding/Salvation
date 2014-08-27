@@ -33,7 +33,7 @@ function Entity(x, y, width, height, type, sprite, args) {
     this.y = y;
     this.width = width;
     this.height = height;
-    this._type = type;
+    this.type = type;
     this.selected = false;
     if (sprite != null && sprite != undefined) {
         this.sprite = new Sprite(res.get(sprite['name']), sprite['pos'], [width, height],
@@ -63,9 +63,6 @@ Entity.prototype = {
     },
     getCenter : function() {
         return { x : this.x + this.width / 2, y : this.y + this.height / 2};
-    },
-    get type() {
-        return this._type;
     },
     act : function() {},
     updateSprite : function() {
