@@ -4,10 +4,24 @@ html, body {
     background-color: #000;
 }
 
-/*@font-face {font-family: Aoyagi; src: url("../res/AoyagiKouzan.ttf"); } */
+@font-face {font-family: Visitor; src: url("../res/visitor1.ttf"); }
 
 #canvas {
     display: block;
     margin: 0 auto;
     vertical-align: middle;
+}
+
+#twitter {
+    margin: 0 568px;
+}
+
+#description {
+    text-align: center;
+    color : #555;
+    font : 25px Visitor;
+}
+
+span a {
+    color : #59B;
 }
